@@ -2,6 +2,7 @@ import subprocess
 import os
 import time 
 from getpass import getpass
+from random import Random 
 
 # TODO: copy over documentation/comment from the rotate_surfshark file.
 
@@ -14,7 +15,7 @@ def get_ip(echo=False):
 
 
 class IPRotator():
-    def __init__(self, auth_file, log_file, config_location):
+    def __init__(self, auth_file, log_file, config_location, seed=123):
         self.auth_file = auth_file
         self.log_file = log_file
         self.config_location = config_location
@@ -25,6 +26,7 @@ class IPRotator():
         self.base_ip = ip
         self.current_config_file = None
         self.vpn_process = None 
+        self.randomizer = Random(seed)
 
         pwd = getpass("Please enter your sudo password: ")
         self.raw_pwd = pwd 
@@ -76,6 +78,10 @@ class IPRotator():
             self.config_files.append(self.current_config_file) # put the current file to the end of the queue 
         self.current_config_file = os.path.join(self.config_files.pop(0))
 
+    def shuffle_proxies(self):
+        "Randomly shuffle the list of proxies. This changes the order by which we iterate through them."
+        self.randomizer.shuffle(self.config_files)
+        self._set_config_file()
 
 
     def disconnect(self):
