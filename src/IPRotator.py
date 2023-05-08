@@ -44,7 +44,7 @@ class IPRotator():
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
 
-    def connect(self, timeout=20):
+    def connect(self, timeout=40):
         "Connect to the next server in the queue"
         if self.current_config_file is None: # set IP for the first time 
             self._set_config_file()
