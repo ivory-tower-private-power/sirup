@@ -3,6 +3,7 @@ import os
 import time 
 from getpass import getpass
 from random import Random 
+import logging 
 
 # TODO: copy over documentation/comment from the rotate_surfshark file.
 
@@ -38,7 +39,8 @@ class IPRotator():
 
     def _load_config_files(self):
         "Take all available confg file and put them into a list. Only use _udp connections; tcp and upd give the same IP for a given server."
-        files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
+        # files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
+        files = [f for f in os.listdir(self.config_location)]
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
 
@@ -69,7 +71,14 @@ class IPRotator():
         "Rotate to next server"
         self.disconnect()
         self._set_config_file()
-        self.connect()
+        try:
+            self.connect()
+        except TimeoutError as e: # TODO: this will work for one error. If it fails twice consecutively, the program will fail.
+            logging.info(f"Handling error {e}")
+            self._set_config_file()
+            time.sleep(300) # from experience, connecting to the same server works again after some time. 300s is just a conservative guess here.
+            self.connect()
+            
 
 
     def _set_config_file(self):
