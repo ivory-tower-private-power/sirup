@@ -73,7 +73,7 @@ class IPRotator():
         self._set_config_file()
         try:
             self.connect()
-        except TimeoutError as e: # TODO: this will work for one error. If it fails twice consecutively, the program will fail.
+        except TimeoutError as e: # TODO: this will work for one error. If it fails twice consecutively, the program will fail. better try this several times, and if it fails, raise new exception which is to be handled at the top? ie, only then wait 300 or so
             logging.info(f"Handling error {e}")
             self._set_config_file()
             time.sleep(300) # from experience, connecting to the same server works again after some time. 300s is just a conservative guess here.
