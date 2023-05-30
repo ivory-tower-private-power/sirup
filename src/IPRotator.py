@@ -11,7 +11,7 @@ def get_ip(echo=False):
     "Query the current IP address of the computer."
     result = subprocess.run("curl ifconfig.me".split(), capture_output=True, text=True) 
     if echo:
-        print(f"IP is: {result.stdout}")
+        logging.info(f"IP is: {result.stdout}")
     return result.stdout 
 
 
@@ -61,7 +61,7 @@ class IPRotator():
             self.is_connected = self._check_connection()
         
         if self.is_connected:
-            print(f"Connected with {self.current_config_file}")
+            logging.info(f"Connected with {self.current_config_file}")
             self.current_ip = get_ip()
         else:
             raise TimeoutError(f"Could not build connection with {self.current_config_file}")
@@ -109,7 +109,7 @@ class IPRotator():
         if print_connection:
             for line in log:
                 if "Peer Connection Initiated" in line:
-                    print(line)
+                    logging.info(line)
         if "Initialization Sequence Completed" in log[-1]:
             return True 
         else:
