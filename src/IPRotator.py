@@ -44,8 +44,8 @@ class IPRotator():
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
 
-    def connect(self, timeout=40):
-        "Connect to the next server in the queue"
+    def _connect(self, timeout=40):
+        "Connect to single server. Fails when no connection after `timeout`."
         if self.current_config_file is None: # set IP for the first time 
             self._set_config_file()
         
@@ -71,15 +71,25 @@ class IPRotator():
         "Rotate to next server"
         self.disconnect()
         self._set_config_file()
-        try:
-            self.connect()
-        except TimeoutError as e: # TODO: this will work for one error. If it fails twice consecutively, the program will fail. better try this several times, and if it fails, raise new exception which is to be handled at the top? ie, only then wait 300 or so
-            logging.info(f"Handling error {e}")
-            self._set_config_file()
-            time.sleep(60) # from experience, connecting to the same server works again after some time.
-            self.connect()
-            
+        self.connect()
 
+    def connect(self):
+        "Connect to the next server in the queue"
+        i = 0 
+        max_trials = 5
+        while True:
+            try: 
+                self._connect()
+            except TimeoutError as e:
+                if i > max_trials:
+                    raise TimeoutError(f"Failed to connect to {max_trials} different servers.")
+                else:
+                    logging.info(f"Handling error {e}")
+                    self._set_config_file()
+                    time.sleep(10) 
+                    i += 1
+            if self.is_connected:
+                break
 
     def _set_config_file(self):
         "Set or update the config file to the next candidate in the list."
@@ -99,7 +109,10 @@ class IPRotator():
         subprocess.check_output(f"sudo -S kill {pgid}".split(), stdin=self.pwd.stdout) 
         time.sleep(5)
         self.current_ip = get_ip(echo=True)
-        assert self.current_ip == self.base_ip
+        try:
+            assert self.current_ip == self.base_ip
+        except:
+            breakpoint()
         self.is_connected = False
 
 
