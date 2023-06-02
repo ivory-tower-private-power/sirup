@@ -42,7 +42,6 @@ class IPRotator():
         # files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
         files = [f for f in os.listdir(self.config_location)]
         files = [os.path.join(self.config_location, f) for f in files]
-        files = [f for f in files if "us-" in f]
         self.config_files = files
 
     def connect(self, timeout=40):
