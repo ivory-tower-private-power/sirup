@@ -9,7 +9,7 @@ import logging
 
 def get_ip(echo=False):
     "Query the current IP address of the computer."
-    result = subprocess.run("curl ifconfig.me".split(), capture_output=True, text=True) 
+    result = subprocess.run("curl ifconfig.me".split(), capture_output=True, text=True) # TODO: replace with r = requests.get("https://ifconfig.me"; r.text to show address)
     if echo:
         logging.info(f"IP is: {result.stdout}")
     return result.stdout 
