@@ -4,15 +4,16 @@ import time
 from getpass import getpass
 from random import Random 
 import logging 
+import requests
 
 # TODO: copy over documentation/comment from the rotate_surfshark file.
 
 def get_ip(echo=False):
     "Query the current IP address of the computer."
-    result = subprocess.run("curl ifconfig.me".split(), capture_output=True, text=True) # TODO: replace with r = requests.get("https://ifconfig.me"; r.text to show address)
+    result = requests.get("https://ifconfig.me")
     if echo:
-        logging.info(f"IP is: {result.stdout}")
-    return result.stdout 
+        logging.info(f"IP is: {result.text}")
+    return result.text 
 
 
 class IPRotator():
@@ -109,10 +110,7 @@ class IPRotator():
         subprocess.check_output(f"sudo -S kill {pgid}".split(), stdin=self.pwd.stdout) 
         time.sleep(5)
         self.current_ip = get_ip(echo=True)
-        try:
-            assert self.current_ip == self.base_ip
-        except:
-            breakpoint()
+        assert self.current_ip == self.base_ip
         self.is_connected = False
 
 
