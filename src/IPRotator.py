@@ -60,7 +60,7 @@ class IPRotator():
     def _load_config_files(self):
         "Take all available confg file and put them into a list. Only use _udp connections; tcp and upd give the same IP for a given server."
         # files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
-        files = [f for f in os.listdir(self.config_location)]
+        files = [f for f in os.listdir(self.config_location) if not "-tor" in f] #ignore tor proxies. could be slow to establish connection.
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
 
