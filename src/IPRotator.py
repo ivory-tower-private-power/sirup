@@ -123,13 +123,15 @@ class IPRotator():
         self._set_config_file()
 
 
-    def disconnect(self):
+    def disconnect(self, check_ip=False):
         "Disconnect the vpn, get back to base IP."
         pgid = os.getpgid(self.vpn_process.pid)
         subprocess.check_output(f"sudo -S kill {pgid}".split(), stdin=self.pwd.stdout) 
         time.sleep(5)
         self.current_ip = get_ip(echo=True)
-        assert self.current_ip == self.base_ip
+        if check_ip: # this is to make sure the IP is the same as when the class was instantiated. 
+            # it may not be necessary, and could even a problem in networks with dynamic IPs (like eduroam)
+            assert self.current_ip == self.base_ip
         self.is_connected = False
 
 
