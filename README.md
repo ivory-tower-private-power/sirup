@@ -1,3 +1,7 @@
+# sirup: simple IP rotation using python
+
+A wrapper around the openvpn CLI to rotate the IP address in python programs. 
+
 ## Badges
 
 (Customize these badges with your own links, and check https://shields.io/ or https://badgen.net/ to see which other badges are available.)
@@ -23,6 +27,10 @@
 ## How to use sirup
 
 Simple IP rotation using python.
+
+## Requirements
+- An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark)
+- A linux OS and superuser rights
 
 The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
