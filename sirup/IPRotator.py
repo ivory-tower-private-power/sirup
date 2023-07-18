@@ -1,14 +1,13 @@
-import subprocess
+import logging 
 import os
+import requests
+import subprocess
 import time 
+
 from getpass import getpass
 from random import Random 
-import logging 
-import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry 
-
-# TODO: copy over documentation/comment from the rotate_surfshark file.
 
 
 def get_ip(echo=False):
@@ -37,6 +36,7 @@ def get_ip(echo=False):
 
 class IPRotator():
     def __init__(self, auth_file, log_file, config_location, seed=123):
+        # TODO: docstring for parameters
         self.auth_file = auth_file
         self.log_file = log_file
         self.config_location = config_location
@@ -50,10 +50,9 @@ class IPRotator():
         self.randomizer = Random(seed)
 
         pwd = getpass("Please enter your sudo password: ")
-        self.raw_pwd = pwd 
-        # this is just to have the password in a format that can be passed to the next process
-        piped_password = subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE) 
-        self.pwd = piped_password 
+        self.raw_pwd = pwd # TODO: this is not necessary?
+        # pipe the password so that it can be passed to the next process
+        self.pwd = subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE) 
 
         self._load_config_files()
 
