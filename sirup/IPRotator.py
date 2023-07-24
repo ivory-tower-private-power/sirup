@@ -25,13 +25,12 @@ def get_ip(echo=False):
         response = session.get("https://ifconfig.me", timeout=3)
         if response.ok:
             if echo:
-                logging.info(f"IP is: {response.text}")
+                logging.info("IP is: %s", response.text)
             return response.text
-        else:
-            requests.ConnectionError("Failed to get the IP address")
+        raise requests.ConnectionError("Failed to get the IP address")
     except Exception as e:
-        logging.info(f"Got an exception: {e}")
-        requests.ConnectionError("Failed to get the IP address")
+        logging.info("Got an exception: %s", e)
+        raise requests.ConnectionError("Failed to get the IP address")
 
 
 class IPRotator():
@@ -52,14 +51,16 @@ class IPRotator():
         pwd = getpass("Please enter your sudo password: ")
         self.raw_pwd = pwd # TODO: this is not necessary?
         # pipe the password so that it can be passed to the next process
-        self.pwd = subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE) 
+        self.pwd = subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE)
+        # with subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE) as process:
+        #     self.pwd = process
 
         self._load_config_files()
 
     def _load_config_files(self):
         "Take all available confg file and put them into a list. Only use _udp connections; tcp and upd give the same IP for a given server."
         # files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
-        files = [f for f in os.listdir(self.config_location) if not "-tor" in f] #ignore tor proxies. could be slow to establish connection.
+        files = [f for f in os.listdir(self.config_location) if "-tor" not in f] #ignore tor proxies. could be slow to establish connection.
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
 
@@ -68,7 +69,7 @@ class IPRotator():
         if self.current_config_file is None: # set IP for the first time 
             self._set_config_file()
         
-        cmd = ["sudo", "-S", "openvpn", "--config", self.current_config_file, "--auth-user-pass", self.auth_file, "--log", self.log_file]
+        cmd = ["sudo", "-S", "openvpn", "--config", self.current_config_file, "--auth-user-pass", self.auth_file, "--log", self.log_file]            
         proc = subprocess.Popen(
             cmd, stdin=self.pwd.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp
         )
@@ -79,7 +80,7 @@ class IPRotator():
             self.is_connected = self._check_connection()
         
         if self.is_connected:
-            logging.info(f"Connected with {self.current_config_file}")
+            logging.info("Connected with %s", self.current_config_file)
             self.current_ip = get_ip()
         else:
             raise TimeoutError(f"Could not build connection with {self.current_config_file}")
@@ -94,23 +95,22 @@ class IPRotator():
 
     def connect(self):
         "Connect to the next server in the queue"
-        i = 1
+        i = 0
         max_trials = 2000 # set to some high value 
         while True:
             try: 
                 self._connect()
             except TimeoutError as e:
+                i += 1
                 if i > max_trials:
-                    raise TimeoutError(f"Failed to connect to {max_trials} different servers.")
-                else:
-                    logging.info(f"Handling error {e}")
-                    self._set_config_file()
-                    waiting_time = 10
-                    if i % 20 == 0:
-                        waiting_time = 300 # try to see whether this helps
-                        logging.info(f"Failed to connect {i} times; waiting {waiting_time}")
-                    time.sleep(waiting_time) 
-                    i += 1
+                    raise TimeoutError(f"Failed to connect to {max_trials} different servers.") from e 
+                logging.info("Handling error %s", e)
+                self._set_config_file()
+                waiting_time = 10
+                if i % 20 == 0:
+                    waiting_time = 300 # try to see whether this helps
+                    logging.info("Failed to connect %d times; waiting %d", i, waiting_time)
+                time.sleep(waiting_time) 
             if self.is_connected:
                 break
 
@@ -146,8 +146,7 @@ class IPRotator():
                     logging.info(line)
         if "Initialization Sequence Completed" in log[-1]:
             return True 
-        else:
-            return False 
+        return False 
 
 
     def _read_logfile(self):
@@ -158,5 +157,3 @@ class IPRotator():
         )
         content = content.rstrip().split("\n")
         return content 
-
-
