@@ -1,13 +1,12 @@
-import logging 
+import logging
 import os
-import requests
 import subprocess
-import time 
-
+import time
 from getpass import getpass
-from random import Random 
+from random import Random
+import requests
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry 
+from urllib3.util.retry import Retry
 
 
 def get_ip(echo=False):
