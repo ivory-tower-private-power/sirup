@@ -1,16 +1,29 @@
+import getpass
 import logging
 import os
 import subprocess
 import time
-from getpass import getpass
 from random import Random
 from .get_ip import get_ip
 from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 
 
+def start_vpn(config, auth, log, proc_id, pwd):
+    "Start an open vpn connection."
+    cmd = ["sudo", "-S", "openvpn",
+           "--config", config,
+           "--auth", auth,
+           "--log", log,
+           "--writepid", proc_id,
+           "--daemon"]
+
+    logging.debug("start openvpn")
+    subprocess.run(cmd, input=pwd, check=True)
+
 class IPRotator():
-    def __init__(self, auth_file, log_file, config_location, seed=123):
+    def __init__(self, auth_file, log_file, config_location, seed=123, pwd=None): # pylint: disable=too-many-arguments
         # TODO: docstring for parameters
+        # TODO: require types? config_location should be os.path? then remove the pylint constraint above
         self.auth_file = auth_file
         self.log_file = log_file
         self.config_location = config_location
@@ -23,12 +36,16 @@ class IPRotator():
         self.vpn_process_id = None 
         self.randomizer = Random(seed)
 
-        self.pwd = getpass("Please enter your sudo password: ")
+        if pwd is None:
+            pwd = getpass.getpass("Please enter your sudo password: ")
+        self.pwd = pwd
 
-        self._load_config_files()
+        self._load_config_files() # TODO: this makes the tests fail. how to fix?
+        # TODO: validate password? ie try `sudo ls`, and if it fails, raise an exception?
 
     def _load_config_files(self):
         "Take all available confg file and put them into a list. Only use _udp connections; tcp and upd give the same IP for a given server."
+        # TODO: remove this? ie ask directly for the list of config files?
         files = [f for f in os.listdir(self.config_location) if "-tor" not in f] #ignore tor proxies. could be slow to establish connection.
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
@@ -39,17 +56,10 @@ class IPRotator():
             self._set_config_file()
 
         logging.debug("start _connect")
+        # TODO: capture missing config file? missing auth file? how do I do this?
 
         with TemporaryFileWithRootPermission(suffix=".txt", password=self.pwd) as file_with_process_id:
-            cmd = ["sudo", "-S", "openvpn",
-                "--config", self.current_config_file, 
-                "--auth-user-pass", self.auth_file,
-                "--log", self.log_file,
-                "--writepid", file_with_process_id,
-                "--daemon"]
-        
-            logging.debug("start openvpn")
-            subprocess.run(cmd, input=self.pwd.encode(), check=True)
+            start_vpn(self.current_config_file, self.auth_file, self.log_file, file_with_process_id, self.pwd)
 
             start_time = time.time()
             while time.time() - start_time <= timeout and not self.is_connected:
@@ -63,7 +73,7 @@ class IPRotator():
                 raise TimeoutError(f"Could not build connection with {self.current_config_file}")
 
             logging.debug("reading in vpn pid")
-            with open(file_with_process_id, "rb") as file:
+            with open(file_with_process_id, "rb") as file: # TODO: this can be separated into a function and tested separately
                 vpn_pid = file.readlines()
                 assert len(vpn_pid) == 1, "Unexpected length of file."
                 self.vpn_process_id = vpn_pid[0].strip()
@@ -99,6 +109,8 @@ class IPRotator():
 
     def _set_config_file(self):
         "Set or update the config file to the next candidate in the list."
+        # TODO: use here, as a util, the function I wrote in the other repo? 
+        # (for pop_append?) need to return both the updated list (or not b/c mutable?) and set the config file
         if self.current_config_file is not None:
             self.config_files.append(self.current_config_file) # put the current file to the end of the queue 
         self.current_config_file = os.path.join(self.config_files.pop(0))
@@ -122,6 +134,7 @@ class IPRotator():
 
 
     def _check_connection(self, print_connection=False):
+        # TODO: test correctly reading log file; test reaction to different log file messages/print the whole logfile?
         log = self._read_logfile()
         if print_connection:
             for line in log:
@@ -134,6 +147,7 @@ class IPRotator():
 
     def _read_logfile(self):
         "read log file from openvpn into a list"
+        # TODO: check that log file is read correctly
         cmd = ["sudo", "cat", self.log_file]
         output = subprocess.run(cmd, input=self.pwd.encode(), capture_output=True, check=True)
         content = output.stdout.decode()
