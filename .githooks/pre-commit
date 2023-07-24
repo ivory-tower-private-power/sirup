@@ -18,7 +18,7 @@ fi
 echo "Starting isort analysis using configuration from setup.cfg..."
 
 # recursively run isort on sirup/ directory, don't try to automatically fix anything
-isort --recursive --check-only sirup
+isort --check-only sirup
 
 if [ $? != "0" ]; then
     echo "Commit aborted."
