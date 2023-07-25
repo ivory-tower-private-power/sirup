@@ -4,7 +4,6 @@ import subprocess
 import time
 from getpass import getpass
 from random import Random
-from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -75,8 +74,7 @@ class IPRotator():
                 "--daemon"]
         
             logging.debug("start openvpn")
-            with subprocess.Popen(cmd, stdin=PIPE) as proc:
-                proc.communicate(input=self.pwd.encode())
+            subprocess.run(cmd, input=self.pwd.encode(), check=True)
 
             start_time = time.time()
             while time.time() - start_time <= timeout and not self.is_connected:
@@ -139,8 +137,7 @@ class IPRotator():
     def disconnect(self, check_ip=False):
         "Disconnect the vpn, get back to base IP."
         cmd = ["sudo", "-S", "kill", self.vpn_process_id]
-        with subprocess.Popen(cmd, stdin=PIPE) as proc:
-            proc.communicate(input=self.pwd.encode())
+        subprocess.run(cmd, input=self.pwd.encode(), check=True)
         time.sleep(5)
         self.current_ip = get_ip(echo=True)
         if check_ip: # this is to make sure the IP is the same as when the class was instantiated. 
@@ -163,8 +160,7 @@ class IPRotator():
     def _read_logfile(self):
         "read log file from openvpn into a list"
         cmd = ["sudo", "cat", self.log_file]
-        with subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, text=True) as process:
-            content, _ = process.communicate(input=self.pwd)
-
+        output = subprocess.run(cmd, input=self.pwd.encode(), capture_output=True, check=True)
+        content = output.stdout.decode()
         content = content.rstrip().split("\n")
         return content 
