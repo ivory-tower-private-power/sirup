@@ -8,6 +8,7 @@ from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from .CustomNamedTemporaryFile import CustomNamedTemporaryFile
 
 
 def get_ip(echo=False):
@@ -47,7 +48,6 @@ class IPRotator():
         self.current_config_file = None
         self.vpn_process_id = None 
         self.randomizer = Random(seed)
-        self.pid_file = "vpn_pid.txt" # TODO: where to store log files and pid files?
 
         self.pwd = getpass("Please enter your sudo password: ")
 
@@ -63,33 +63,39 @@ class IPRotator():
         "Connect to single server. Fails when no connection after `timeout`."
         if self.current_config_file is None: # set IP for the first time 
             self._set_config_file()
-        
-        cmd = ["sudo", "-S", "openvpn",
-               "--config", self.current_config_file, 
-               "--auth-user-pass", self.auth_file,
-               "--log", self.log_file,
-               "--writepid", self.pid_file,
-               "--daemon"]
-        
-        with subprocess.Popen(cmd, stdin=PIPE) as proc:
-            proc.communicate(input=self.pwd.encode())
 
-        
-        start_time = time.time()
-        while time.time() - start_time <= timeout and not self.is_connected:
-            time.sleep(3)
-            self.is_connected = self._check_connection()
-        
-        if self.is_connected:
-            logging.info("Connected with %s", self.current_config_file)
-            self.current_ip = get_ip()
-        else:
-            raise TimeoutError(f"Could not build connection with {self.current_config_file}")
+        logging.debug("start _connect")
 
-        with open(self.pid_file, "rb") as file:
-            vpn_pid = file.readlines()
-            assert len(vpn_pid) == 1, "Unexpected length of file."
-            self.vpn_process_id = vpn_pid[0].strip()
+        with CustomNamedTemporaryFile(suffix=".txt", password=self.pwd) as file_with_process_id:
+            cmd = ["sudo", "-S", "openvpn",
+                "--config", self.current_config_file, 
+                "--auth-user-pass", self.auth_file,
+                "--log", self.log_file,
+                "--writepid", file_with_process_id,
+                "--daemon"]
+        
+            logging.debug("start openvpn")
+            with subprocess.Popen(cmd, stdin=PIPE) as proc:
+                proc.communicate(input=self.pwd.encode())
+
+            start_time = time.time()
+            while time.time() - start_time <= timeout and not self.is_connected:
+                time.sleep(3)
+                self.is_connected = self._check_connection()
+            
+            if self.is_connected:
+                logging.info("Connected with %s", self.current_config_file)
+                self.current_ip = get_ip()
+            else:
+                raise TimeoutError(f"Could not build connection with {self.current_config_file}")
+
+            logging.debug("reading in vpn pid")
+            with open(file_with_process_id, "rb") as file:
+                vpn_pid = file.readlines()
+                assert len(vpn_pid) == 1, "Unexpected length of file."
+                self.vpn_process_id = vpn_pid[0].strip()
+
+
 
     def rotate(self):
         "Rotate to next server"
