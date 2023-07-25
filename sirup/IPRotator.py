@@ -4,6 +4,7 @@ import subprocess
 import time
 from getpass import getpass
 from random import Random
+from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -44,21 +45,16 @@ class IPRotator():
         self.current_ip = ip 
         self.base_ip = ip
         self.current_config_file = None
-        self.vpn_process = None 
+        self.vpn_process_id = None 
         self.randomizer = Random(seed)
+        self.pid_file = "vpn_pid.txt" # TODO: where to store log files and pid files?
 
-        pwd = getpass("Please enter your sudo password: ")
-        self.raw_pwd = pwd # TODO: this is not necessary?
-        # pipe the password so that it can be passed to the next process
-        self.pwd = subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE)
-        # with subprocess.Popen(['echo', pwd], stdout=subprocess.PIPE) as process:
-        #     self.pwd = process
+        self.pwd = getpass("Please enter your sudo password: ")
 
         self._load_config_files()
 
     def _load_config_files(self):
         "Take all available confg file and put them into a list. Only use _udp connections; tcp and upd give the same IP for a given server."
-        # files = [f for f in os.listdir(self.config_location) if "surfshark" in f and "_udp" in f]
         files = [f for f in os.listdir(self.config_location) if "-tor" not in f] #ignore tor proxies. could be slow to establish connection.
         files = [os.path.join(self.config_location, f) for f in files]
         self.config_files = files
@@ -68,10 +64,16 @@ class IPRotator():
         if self.current_config_file is None: # set IP for the first time 
             self._set_config_file()
         
-        cmd = ["sudo", "-S", "openvpn", "--config", self.current_config_file, "--auth-user-pass", self.auth_file, "--log", self.log_file]            
-        proc = subprocess.Popen(
-            cmd, stdin=self.pwd.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp
-        )
+        cmd = ["sudo", "-S", "openvpn",
+               "--config", self.current_config_file, 
+               "--auth-user-pass", self.auth_file,
+               "--log", self.log_file,
+               "--writepid", self.pid_file,
+               "--daemon"]
+        
+        with subprocess.Popen(cmd, stdin=PIPE) as proc:
+            proc.communicate(input=self.pwd.encode())
+
         
         start_time = time.time()
         while time.time() - start_time <= timeout and not self.is_connected:
@@ -84,7 +86,10 @@ class IPRotator():
         else:
             raise TimeoutError(f"Could not build connection with {self.current_config_file}")
 
-        self.vpn_process = proc 
+        with open(self.pid_file, "rb") as file:
+            vpn_pid = file.readlines()
+            assert len(vpn_pid) == 1, "Unexpected length of file."
+            self.vpn_process_id = vpn_pid[0].strip()
 
     def rotate(self):
         "Rotate to next server"
@@ -127,8 +132,9 @@ class IPRotator():
 
     def disconnect(self, check_ip=False):
         "Disconnect the vpn, get back to base IP."
-        pgid = os.getpgid(self.vpn_process.pid)
-        subprocess.check_output(f"sudo -S kill {pgid}".split(), stdin=self.pwd.stdout) 
+        cmd = ["sudo", "-S", "kill", self.vpn_process_id]
+        with subprocess.Popen(cmd, stdin=PIPE) as proc:
+            proc.communicate(input=self.pwd.encode())
         time.sleep(5)
         self.current_ip = get_ip(echo=True)
         if check_ip: # this is to make sure the IP is the same as when the class was instantiated. 
@@ -150,9 +156,9 @@ class IPRotator():
 
     def _read_logfile(self):
         "read log file from openvpn into a list"
-        cmd = f"sudo -S cat {self.log_file}".split()
-        content = subprocess.check_output(
-            cmd, stdin=self.pwd.stdout, text=True
-        )
+        cmd = ["sudo", "cat", self.log_file]
+        with subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, text=True) as process:
+            content, _ = process.communicate(input=self.pwd)
+
         content = content.rstrip().split("\n")
         return content 
