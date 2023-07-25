@@ -1,18 +1,17 @@
 import os
 import subprocess
 import tempfile
-from subprocess import PIPE
 
 
 # adapted from https://stackoverflow.com/questions/23212435/permission-denied-to-write-to-my-temporary-file
 
-class CustomNamedTemporaryFile:
-    """Context manager with temporary file name that is deleted on __exit__
+class TemporaryFileWithRootPermission:
+    """Context manager with temporary file name that is deleted on __exit__,
+    which requires root permission.
     """
-    def __init__(self, password, mode='wb', suffix=None):
-        self._mode = mode
-        self._suffix = suffix
+    def __init__(self, password, suffix=None):
         self._pwd = password
+        self._suffix = suffix
 
     def __enter__(self):
         # Generate a random temporary file name
@@ -27,7 +26,6 @@ class CustomNamedTemporaryFile:
             pass
 
         cmd = ["sudo", "-S", "rm", "-rf", self.file_name]
-        with subprocess.Popen(cmd, stdin=PIPE, text=True) as process:
-            _ = process.communicate(input=self._pwd)
+        subprocess.run(cmd, input=self._pwd.encode(), check=True)
 
         assert not os.path.exists(self.file_name), "temporary file not deleted"

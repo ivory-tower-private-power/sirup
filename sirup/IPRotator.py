@@ -7,7 +7,7 @@ from random import Random
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from .CustomNamedTemporaryFile import CustomNamedTemporaryFile
+from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 
 
 def get_ip(echo=False):
@@ -65,7 +65,7 @@ class IPRotator():
 
         logging.debug("start _connect")
 
-        with CustomNamedTemporaryFile(suffix=".txt", password=self.pwd) as file_with_process_id:
+        with TemporaryFileWithRootPermission(suffix=".txt", password=self.pwd) as file_with_process_id:
             cmd = ["sudo", "-S", "openvpn",
                 "--config", self.current_config_file, 
                 "--auth-user-pass", self.auth_file,
