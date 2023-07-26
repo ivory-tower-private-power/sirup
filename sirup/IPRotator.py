@@ -12,13 +12,13 @@ def start_vpn(config, auth, log, proc_id, pwd):
     "Start an open vpn connection."
     cmd = ["sudo", "-S", "openvpn",
            "--config", config,
-           "--auth", auth,
+           "--auth-user-pass", auth,
            "--log", log,
            "--writepid", proc_id,
            "--daemon"]
 
     logging.debug("start openvpn")
-    subprocess.run(cmd, input=pwd, check=True)
+    subprocess.run(cmd, input=pwd.encode(), check=True)
 
 class IPRotator():
     def __init__(self, auth_file, log_file, config_location, seed=123, pwd=None): # pylint: disable=too-many-arguments

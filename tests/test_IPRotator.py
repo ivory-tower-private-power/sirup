@@ -20,11 +20,11 @@ def test_start_vpn(mocker):
     start_vpn("myconfig", "myauth", "mylog", "myproc_id", "mypwd")
     cmd = ["sudo", "-S", "openvpn",
            "--config", "myconfig",
-           "--auth", "myauth",
+           "--auth-user-pass", "myauth",
            "--log", "mylog",
            "--writepid", "myproc_id",
            "--daemon"]
-    subprocess.run.assert_called_once_with(cmd, input="mypwd", check=True) 
+    subprocess.run.assert_called_once_with(cmd, input="mypwd".encode(), check=True) 
 
 # def test_class_instantiation_with_provided_password():
 #     instance = YourClass(arg1="test", password="test_password")
