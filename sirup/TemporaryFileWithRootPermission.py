@@ -20,6 +20,20 @@ class TemporaryFileWithRootPermission:
             file_name = file_name + self._suffix
         self.file_name = file_name
         return self.file_name
+    
+    def create(self, file_name):
+        """Creates a file path to a new file in the temp folder. 
+        Remove any existing file with the same name"""
+        if self._suffix is not None:
+            file_name = file_name + self._suffix
+        self.file_name = os.path.join(tempfile.gettempdir(), file_name)
+        if os.path.exists(self.file_name):
+            self.remove()
+    
+    def remove(self):
+        cmd = ["sudo", "-S", "rm", "-rf", self.file_name]
+        print(cmd)
+        subprocess.run(cmd, input=self._pwd.encode(), check=True)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         with open(self.file_name, "rb"): # make sure file is closed properly
