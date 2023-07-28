@@ -1,80 +1,60 @@
 
 import os
-import subprocess
 import tempfile
-import time
-import pytest
+from subprocess import PIPE
+from unittest import mock
 from sirup.VPNConnector import VPNConnector
-from sirup.VPNConnector import check_connection
-from sirup.VPNConnector import sudo_read_file
 
 
-def test_start_vpn_without_pid(mocker):
+@mock.patch("sirup.VPNConnector.TemporaryFileWithRootPermission")
+@mock.patch("sirup.VPNConnector.get_ip") 
+@mock.patch("subprocess.Popen")
+def test_start_vpn(mock_popen, mock_get_ip, mock_temp_file):
+    """Test that OpenVPN is started with the right arguments.
+
+    Comment
+    -------
+    We need to mock 3 things
+    - subprocess.Popen, which we expect to be called with certain arguments by the connector.start_vpn value
+    - sirup.VPNConnector.get_ip, which requires an internet connection and makes an API call for each test run 
+    - TemporaryFileWithRootPermission, because it does `subprocess.run`, which calls Popen.__init__
+    (see https://github.com/python/cpython/blob/main/Lib/subprocess.py). Without the mock, this interferes 
+    with the test because Popen.__init__() is called twice.
+
+    Note also that we patch the objects and functions from sirup.VPNConnector, and not from
+    their source files. See also https://docs.python.org/3/library/unittest.mock.html#where-to-patch
+    """
+    ## Instantiate the class
     connector = VPNConnector("config_file", "auth_file")
     temp_dir = tempfile.gettempdir()
-    mocker.patch("subprocess.run")
-    cmd = ["sudo", "-S", "openvpn",
+    cmd_expected = ["sudo", "-S", "openvpn",
            "--config", "config_file",
            "--auth-user-pass", "auth_file",
            "--log", os.path.join(temp_dir, "openvpn.log"),
            "--daemon"]
-    connector.start_vpn(pwd="my_password")
-    subprocess.run.assert_called_once_with(cmd, input="my_password".encode(), check=True)
+    ## Instantiate mocks and define properties 
+    # The temp file used as log
+    mock_temp_file_instance = mock_temp_file.return_value
+    mock_temp_file_instance.file_name = os.path.join(temp_dir, "openvpn.log")
+    # The Popen context manager that calls `cmd`
+    process = mock_popen.return_value.__enter__.return_value 
+    process.returncode = 0
+    process.communicate.return_value = (b"", b"") # this fixes the error "not enough values to unpack"
+    process.poll.return_value = None # this silences the CalledProcessError that shows up otherwise
 
-def test_start_vpn_with_pid(mocker):
-    connector = VPNConnector("config_file", "auth_file")
-    temp_dir = tempfile.gettempdir()
-    mocker.patch("subprocess.run")
-    cmd = ["sudo", "-S", "openvpn",
-           "--config", "config_file",
-           "--auth-user-pass", "auth_file",
-           "--log", os.path.join(temp_dir, "openvpn.log"),
-           "--daemon",
-           "--writepid", "file.txt"]
+    ## Main call
+    connector.start_vpn(pwd="my_password") # Popen.__enter__ is also called when the log file is opened/created
+
+    ## Assert 
+    mock_get_ip.assert_called_once() # in the VPNConnector.__init__() call
+    mock_popen.assert_called_once_with(cmd_expected, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    process.communicate.assert_called_once_with("my_password".encode())
+
+    ## Reset all mocks, and check with proc_id argument
+    process.reset_mock()
+    mock_get_ip.reset_mock()
+    mock_popen.reset_mock()
+    cmd_expected.extend(["--writepid", "file.txt"])
     connector.start_vpn(pwd="my_password", proc_id="file.txt")
-    subprocess.run.assert_called_once_with(cmd, input="my_password".encode(), check=True)
-
-
-def test_sudo_read_file_without_sudo(mocker):
-    mocker.patch("subprocess.run")
-    sudo_read_file("myfile.txt")
-    subprocess.run.assert_called_once_with(["cat", "myfile.txt"], capture_output=True, check=True)
-
-def test_sudo_read_file_with_sudo(mocker):
-    mocker.patch("subprocess.run")
-    sudo_read_file("myfile.txt", "my_password")
-    subprocess.run.assert_called_once_with(["sudo", "cat", "myfile.txt"], input="my_password".encode(), capture_output=True, check=True)
-
-
-@pytest.fixture
-def file_to_read(tmp_path):
-    target_output = os.path.join(tmp_path, "testfile.txt")
-    with open(target_output, 'w+', encoding="utf-8") as file:
-        file.writelines(["hello\n", "world\n"])
-    return target_output
-
-def test_sudo_read_file_correct_output(file_to_read):
-    content = sudo_read_file(file_to_read)
-    assert content == ["hello", "world"], "content not read correctly"
-
-
-@pytest.fixture
-def log_file_with_connection(tmp_path):
-    target_output = os.path.join(tmp_path, "logfile_test.txt")
-    with open(target_output, 'w+', encoding="utf-8") as file:
-        file.writelines(["some message\n", "another message\n", "some time and date Initialization Sequence Completed"])
-    return target_output
-
-def test_check_connection_returns_true(log_file_with_connection):
-    output = check_connection(log_file_with_connection, 1, None)
-    assert output, "check_connection does not return True when it should"
-
-def test_check_connection_timeout(file_to_read):
-    start_time = time.time()
-    output = check_connection(file_to_read, 4, None)
-    assert time.time() - start_time >= 4, "timeout not respected"
-    assert not output, "check_connection does not return False when it should"
-
-
-# where should the correctness of the pw be checked? in this class? in the other? in both?
-# 
+    mock_popen.assert_called_once_with(cmd_expected, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    process.communicate.assert_called_once_with("my_password".encode())
