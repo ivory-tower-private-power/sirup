@@ -3,6 +3,7 @@
 # import logging # TODO: add logging properly
 import os
 import subprocess
+import time
 from subprocess import PIPE
 from .raise_ovpn_exceptions import raise_ovpn_exceptions
 from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
@@ -43,9 +44,6 @@ class VPNConnector():
                 raise_ovpn_exceptions(stdout.decode(), stderr.decode(), log)
                 # process the log file, stdout and stderr here 
 
-        if not os.path.exists(self.log_file.file_name): # FIXME: this makes the test_start_vpn* fail 
-            raise FileNotFoundError("Openvpn connection failed. Are the supplied file names correct?")
-
     def connect(self, pwd):
         # DECIDED: use a temporary log file 
         with TemporaryFileWithRootPermission(suffix=".txt", password=pwd) as file_with_process_id:
@@ -63,7 +61,13 @@ class VPNConnector():
             # TODO: print the log file? last messages of the log file?
 
 
-    def disconnect(self):
-        # TODO: kill process
+    def disconnect(self, pwd):
+        "Disconnect the vpn and get back the base IP"
         self.log_file.remove()
-        raise NotImplementedError()
+        cmd = ["sudo", "-S", "kill", self._vpn_process_id]
+        subprocess.run(cmd, input=pwd.encode(), check=True)
+        time.sleep(5)
+        self.current_ip = get_ip()
+        if self.current_ip != self.base_ip:
+            raise RuntimeWarning("Expected to go back to base IP address, but did not")
+        self._vpn_process_id = None

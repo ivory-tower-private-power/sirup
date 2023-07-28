@@ -58,3 +58,30 @@ def test_start_vpn(mock_popen, mock_get_ip, mock_temp_file):
     connector.start_vpn(pwd="my_password", proc_id="file.txt")
     mock_popen.assert_called_once_with(cmd_expected, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     process.communicate.assert_called_once_with("my_password".encode())
+
+@mock.patch("sirup.VPNConnector.TemporaryFileWithRootPermission")
+@mock.patch("time.sleep")
+@mock.patch("sirup.VPNConnector.get_ip") 
+@mock.patch("subprocess.run")
+def test_disconnect(mock_run, mock_get_ip, mock_sleep, mock_temp_file): 
+    connector = VPNConnector("config_file", "auth_file")
+
+    mock_get_ip.assert_called_once_with()
+    mock_get_ip.reset_mock()
+
+    # Set properties of the connector instance 
+    temp_dir = tempfile.gettempdir()
+    mock_temp_file_instance = mock_temp_file.return_value
+    mock_temp_file_instance.file_name = os.path.join(temp_dir, "openvpn.log")
+
+    connector._vpn_process_id = str(1234) #pylint: disable=protected-access
+    connector.log_file = mock_temp_file_instance
+
+    # Call
+    connector.disconnect("my_password")
+
+    # Assert 
+    expected_cmd = ["sudo", "-S", "kill", "1234"]
+    mock_run.assert_called_once_with(expected_cmd, input="my_password".encode(), check=True)
+    mock_get_ip.assert_called_once_with()
+    mock_sleep.assert_called_once_with(5)
