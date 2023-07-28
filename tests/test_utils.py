@@ -2,8 +2,54 @@
 import os
 import subprocess
 import time
+from unittest import mock
 import pytest
+import requests
 from sirup import utils
+
+
+@mock.patch("sirup.utils.requests.Session.get")
+def test_get_ip(mock_get):
+    # breakpoint()
+    class TestResponse:
+        def __init__(self, **kwargs):
+            self.__dict__ = kwargs
+    # Normal case
+    working_response = TestResponse(**{
+        'text': '122.44.33',
+        'status_code': 200,
+        'encoding': 'ISO-8859-1',
+        'reason': 'OK',
+        'elapsed': 'OK'
+    })
+    mock_get.return_value = working_response
+    # mock_session.return_value = 200
+    result = utils.get_ip()
+    mock_get.assert_called_once_with("https://ifconfig.me", timeout=3)
+    assert result == "122.44.33", "returns incorrect IP"
+
+    # ConnectionError
+    mock_get.reset_mock()
+    failed_response = TestResponse(**{
+        'text': '',
+        'status_code': 404,
+        'encoding': 'ISO-8859-1',
+        'reason': 'OK',
+        'elapsed': 'OK'
+    })
+    mock_get.side_effect = requests.ConnectionError
+    mock_get.return_value = failed_response
+    with pytest.raises(requests.ConnectionError):
+        result = utils.get_ip()
+    mock_get.assert_called_once_with("https://ifconfig.me", timeout=3)
+
+    # Other exceptions
+    mock_get.reset_mock()
+    mock_get.side_effect = Exception
+    mock_get.return_value = failed_response
+    with pytest.raises(requests.ConnectionError):
+        result = utils.get_ip()
+    mock_get.assert_called_once_with("https://ifconfig.me", timeout=3)
 
 
 def test_list_of_strings_contains_two_strings():
