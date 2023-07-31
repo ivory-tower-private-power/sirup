@@ -27,17 +27,19 @@ class TemporaryFileWithRootPermission:
         if self._suffix is not None:
             file_name = file_name + self._suffix
         self.file_name = os.path.join(tempfile.gettempdir(), file_name)
-        if os.path.exists(self.file_name):
+        if os.path.exists(self.file_name): # TODO: this logic is not good for testing. depending on outcome of previous tests
+            # (when one fails before removing the temp file), then os.path.exists() is true, otherwise not. better to 
+            # always create the file? 
             self.remove()
     
     def remove(self):
         cmd = ["sudo", "-S", "rm", "-rf", self.file_name]
-        print(cmd)
         subprocess.run(cmd, input=self._pwd.encode(), check=True)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        with open(self.file_name, "rb"): # make sure file is closed properly
-            pass
+        if os.path.exists(self.file_name):
+            with open(self.file_name, "rb"): # make sure file is closed properly
+                pass
 
         cmd = ["sudo", "-S", "rm", "-rf", self.file_name]
         subprocess.run(cmd, input=self._pwd.encode(), check=True)
