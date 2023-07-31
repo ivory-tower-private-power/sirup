@@ -92,7 +92,7 @@ def test_sudo_read_file_correct_output(file_to_read):
 
 @pytest.fixture
 def log_file_with_connection(tmp_path):
-    target_output = os.path.join(tmp_path, "logfile_test.txt")
+    target_output = os.path.join(tmp_path, "logfile_test")
     with open(target_output, 'w+', encoding="utf-8") as file:
         file.writelines(["some message\n", "another message\n", "some time and date Initialization Sequence Completed"])
     return target_output
