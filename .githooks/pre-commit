@@ -6,13 +6,21 @@ echo "Script $0 triggered ..."
 echo "Starting prospector analysis using configuration from .prospector.yml..."
 
 # quietly run prospector
-prospector 1>/dev/null
+# prospector 1>/dev/null
+
+for file in $( git diff --name-only --cached ); do 
+    prospector ${file} 1>/dev/null
+    if [ $? != "0" ]; then
+        echo "Commit aborted. Run 'prospector ${file}' to see the errors."
+        exit 1
+    fi
+done 
 
 # use return code to abort commit if necessary
-if [ $? != "0" ]; then
-    echo "Commit aborted. Run 'prospector' to see the errors."
-    exit 1
-fi
+# if [ $? != "0" ]; then
+#     echo "Commit aborted. Run 'prospector' to see the errors."
+#     exit 1
+# fi
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 echo "Starting isort analysis using configuration from setup.cfg..."
