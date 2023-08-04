@@ -8,9 +8,21 @@ from .VPNConnector import VPNConnector
 
 
 class IPRotator():
-    def __init__(self, auth_file, config_location, pwd=None, seed=123, config_file_rule=None): # pylint: disable=too-many-arguments
-        # TODO: docstring for parameters
-        # TODO: require types? config_location should be os.path? then remove the pylint constraint above
+    def __init__(self, # pylint: disable=too-many-arguments
+                 auth_file,
+                 config_location,
+                 pwd=None,
+                 seed=123,
+                 config_file_rule=None):
+        """Initialize an IPRotator object.
+
+        Args:
+            auth_file (str): Path to the file containing authentication credentials for VPN connections.
+            config_location (str): Path to the directory where VPN configuration files are stored.
+            pwd (str, optional): Sudo password. If not provided, the user will be prompted to enter it.
+            seed (int, optional): Seed for the random number generator to shuffle config files. 
+            config_file_rule (str, optional): Rule to filter config files in the config_location.
+        """
         # TODO: how to deal with properties from the VPNconnector? ie IP, is connected, base IP, ...
         
         config_files = list_files_with_full_path(config_location, config_file_rule)
@@ -23,7 +35,12 @@ class IPRotator():
         self.connector = None # TODO: better name?
 
     def connect(self, shuffle=False, max_trials=2000):
-        "Connect to server associated with the first config_file in the list."
+        """Connect to the server associated with the first config_file in the list.
+
+        Args:
+            shuffle (bool, optional): If True, shuffle the config files before connecting.
+            max_trials (int, optional): Maximum number of connection attempts before raising an exception.
+        """
         i = 0 
         if shuffle:
             self.config_queue.shuffle(self.randomizer)
@@ -49,10 +66,13 @@ class IPRotator():
 
     
     def disconnect(self):
+        """Disconnect from the current server.
+        """
         self.connector.disconnect(self.pwd)
         self.connector = None
 
     def rotate(self):
-        "Rotate to next server"
+        """Rotate to the next server.
+        """
         self.disconnect()
         self.connect()
