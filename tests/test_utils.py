@@ -126,7 +126,8 @@ def test_list_files_with_full_path(tmp_path):
     filter_rule = None 
     output = utils.list_files_with_full_path(tmp_path, filter_rule)
     expected = [os.path.join(tmp_path, f) for f in all_files]
-    assert output == expected, "does not None filter rule correctly"
+    assert len(output) == len(expected), "different number of elements"
+    assert all([e in output for e in expected]), "not all expected elements" #pylint: disable=use-a-generator 
 
 def test_RotationList_pop_append():
     mylist = [1, 2, 3, 4, 5]
