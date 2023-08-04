@@ -23,6 +23,10 @@ class VPNConnector():
         self.base_ip = ip
         self._vpn_process_id = None # if not connected, this should be None
 
+    def is_connected(self):
+        "Return True if a VPN connection is active."
+        return self._vpn_process_id is not None
+
     def start_vpn(self, pwd, proc_id=None):
         "Start an OpenVPN connection."
         self.log_file = TemporaryFileWithRootPermission(password=pwd, suffix=".log")
@@ -63,11 +67,12 @@ class VPNConnector():
 
     def disconnect(self, pwd):
         "Disconnect the vpn and get back the base IP"
-        self.log_file.remove()
         cmd = ["sudo", "-S", "kill", self._vpn_process_id]
         subprocess.run(cmd, input=pwd.encode(), check=True)
+        self.log_file.remove() 
         time.sleep(5)
         self.current_ip = get_ip()
-        if self.current_ip != self.base_ip:
+        if self.current_ip != self.base_ip: 
+            # is informative, but could be a problem with dynamic IPs (like eduroam). so only raise warning.
             raise RuntimeWarning("Expected to go back to base IP address, but did not")
         self._vpn_process_id = None
