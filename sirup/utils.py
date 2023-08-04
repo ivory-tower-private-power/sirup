@@ -62,7 +62,7 @@ def sudo_read_file(file, pwd=None): # TODO: move this to utils?
         output = subprocess.run(cmd, input=pwd.encode(), capture_output=True, check=True)
     
     content = output.stdout.decode()
-    content = content.rstrip().split("\n")
+    content = content.rstrip().splitlines()
     return content 
 
 def check_password(pwd): # TODO: use this only in the rotator class and test it when writing this.
