@@ -98,15 +98,19 @@ def log_file_with_connection(tmp_path):
         file.writelines(["some message\n", "another message\n", "some time and date Initialization Sequence Completed"])
     return target_output
 
-def test_check_connection_returns_true(log_file_with_connection):
+@mock.patch("time.sleep")
+def test_check_connection_returns_true(mock_sleep, log_file_with_connection):
     output = utils.check_connection(log_file_with_connection, 1, None)
     assert output, "check_connection does not return True when it should"
+    mock_sleep.assert_called_once_with(2)
+
 
 def test_check_connection_timeout(file_to_read):
     start_time = time.time()
-    output = utils.check_connection(file_to_read, 4, None)
-    assert time.time() - start_time >= 4, "timeout not respected"
-    assert not output, "check_connection does not return False when it should"
+    expected_timeout = 0.05
+    output = utils.check_connection(file_to_read, expected_timeout, None, expected_timeout/2)
+    assert time.time() - start_time >= expected_timeout, "timeout not respected"
+    assert not output, "does not return False when it should"
 
 
 def test_list_files_with_full_path(tmp_path):

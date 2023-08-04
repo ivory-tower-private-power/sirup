@@ -38,12 +38,12 @@ def list_of_strings_contains_two_strings(strings_to_check, list_of_strings):
     return any(elements_contain_two_strings)
 
 
-def check_connection(log_file, timeout, pwd):
+def check_connection(log_file, timeout, pwd, waiting_time=2):
     "Wait and test for established connection until `timeout`."
     start_time = time.time()
     connected = False
     while time.time() - start_time < timeout and not connected:
-        time.sleep(2)
+        time.sleep(waiting_time)
         log = sudo_read_file(file=log_file, pwd=pwd)
         connected = "Initialization Sequence Completed" in log[-1]
 
