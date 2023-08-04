@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import time
 from subprocess import PIPE
@@ -72,3 +73,30 @@ def check_password(pwd): # TODO: use this only in the rotator class and test it 
             raise RuntimeError("Wrong password")
         # print(stdout)
         print(stderr.decode())
+
+def list_files_with_full_path(directory, rule=None):
+    """Collect all files in a directory and return a list of them with their full path.
+    
+    `rule` is a lambda function that checks if a condition is met and return False otherwise.
+    """
+    files = os.listdir(directory)
+    if rule is not None:
+        files = [rule(f) for f in files if rule(f)]
+    files_with_full_path = [os.path.join(directory, f) for f in files]
+    return files_with_full_path 
+
+
+class RotationList(list):
+    "Custom list for IP rotation."
+    def __init__(self, *args):
+        super().__init__(*args)
+    
+    def pop_append(self):
+        "Pop first element and append it at the end."
+        el = self.pop(0)
+        self.append(el)
+        return el
+    
+    def shuffle(self, randomizer):
+        "Randomly shuffle the list of proxies. This changes the order by which we iterate through them."
+        randomizer.shuffle(self)

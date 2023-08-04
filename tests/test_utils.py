@@ -2,6 +2,7 @@
 import os
 import subprocess
 import time
+from random import Random
 from unittest import mock
 import pytest
 import requests
@@ -106,3 +107,40 @@ def test_check_connection_timeout(file_to_read):
     output = utils.check_connection(file_to_read, 4, None)
     assert time.time() - start_time >= 4, "timeout not respected"
     assert not output, "check_connection does not return False when it should"
+
+
+def test_list_files_with_full_path(tmp_path):
+    all_files = ["udp_file_1", "udp_file_2", "tcp_file_1"]
+    for f in all_files:
+        (tmp_path / f).touch()
+
+    # With rule    
+    def filter_rule(x):
+        return x if "udp" in x else False
+    
+    output = utils.list_files_with_full_path(tmp_path, filter_rule)
+    expected = [os.path.join(tmp_path, "udp_file_1"), os.path.join(tmp_path, "udp_file_2")]
+    assert output == expected, "does not apply filter rule correctly"
+
+    # Without rule 
+    filter_rule = None 
+    output = utils.list_files_with_full_path(tmp_path, filter_rule)
+    expected = [os.path.join(tmp_path, f) for f in all_files]
+    assert output == expected, "does not None filter rule correctly"
+
+def test_RotationList_pop_append():
+    mylist = [1, 2, 3, 4, 5]
+    instance = utils.RotationList(mylist)
+    assert instance == mylist
+
+    first = instance.pop_append()
+    assert first == 1, "does not pop first element"
+    assert instance[-1] == 1, "does not re-append correctly"
+
+def test_RotationList_shuffle():
+    mylist = [1, 2, 3, 4, 5]
+    instance = utils.RotationList(mylist)
+    randomizer = Random(3)
+    instance.shuffle(randomizer)
+    assert len(instance) == len(mylist), "shuffling changes length"
+    assert sum(x != y for x, y in zip(mylist, instance)) > 0, "shuffle does not change order"
