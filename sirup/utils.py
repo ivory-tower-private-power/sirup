@@ -2,7 +2,6 @@ import logging
 import os
 import subprocess
 import time
-import warnings
 from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
@@ -31,7 +30,7 @@ def get_ip(echo=False, config_file=None):
         msg = "Failed to get the IP address"
         if config_file is not None:
             msg = f"{msg}. The config file is {config_file}."
-        warnings.warn(msg)
+        logging.info(msg)
         return 1234
     except Exception as e:
         logging.info("Got an exception: %s", e)
