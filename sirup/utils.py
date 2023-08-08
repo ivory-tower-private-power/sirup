@@ -115,8 +115,8 @@ def kill_all_connections(pwd):
 
     openvpn_pids = pgrep_output.strip().split('\n')
 
-    if openvpn_pids:
+    if openvpn_pids == [""]:
+        logging.info("No openvpn processes found to be killed.")
+    else:
         kill_command = ["sudo", "-S", "kill", "-15"] + openvpn_pids
         subprocess.run(kill_command, input=pwd.encode(), capture_output=True, check=True)
-    else:
-        logging.info("No openvpn processes found to be killed.")
