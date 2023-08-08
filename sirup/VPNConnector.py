@@ -58,7 +58,7 @@ class VPNConnector():
                 print("connected!")
                 vpn_pid = sudo_read_file(file_with_process_id, pwd=pwd)
                 self._vpn_process_id = vpn_pid[0].strip()
-                self.current_ip = get_ip()
+                self.current_ip = get_ip(config_file=self.config_file)
             else:
                 raise TimeoutError("Could not connect to vpn") 
             # TODO: should this be a specific openvpn connection error? not sure

@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import time
+import warnings
 from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
@@ -9,7 +10,7 @@ from urllib3.util.retry import Retry
 from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 
 
-def get_ip(echo=False):
+def get_ip(echo=False, config_file=None):
     "Query the current IP address of the computer."
     # sources:
     # https://stackoverflow.com/questions/23013220/max-retries-exceeded-with-url-in-requests,
@@ -26,7 +27,12 @@ def get_ip(echo=False):
             if echo:
                 logging.info("IP is: %s", response.text)
             return response.text
-        raise requests.ConnectionError("Failed to get the IP address")
+        # raise requests.ConnectionError("Failed to get the IP address")
+        msg = "Failed to get the IP address"
+        if config_file is not None:
+            msg = f"{msg}. The config file is {config_file}."
+        warnings.warn(msg)
+        return 1234
     except Exception as e:
         logging.info("Got an exception: %s", e)
         raise requests.ConnectionError("Failed to get the IP address")
