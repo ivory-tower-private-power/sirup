@@ -107,13 +107,19 @@ class RotationList(list):
         randomizer.shuffle(self)
 
 
-def kill_all_connections(pwd):
-    """Kill all openvpn connections on the machine"""
+def get_vpn_pids(): # TODO: write test; adjust below
     pgrep_command = ["pgrep", "openvpn"]
     pgrep_process = subprocess.Popen(pgrep_command, stdout=subprocess.PIPE, text=True) #pylint: disable=consider-using-with
     pgrep_output, _ = pgrep_process.communicate()
 
     openvpn_pids = pgrep_output.strip().split('\n')
+    return openvpn_pids
+
+
+def kill_all_connections(pwd):
+    """Kill all openvpn connections on the machine"""
+
+    openvpn_pids = get_vpn_pids()
 
     if openvpn_pids == [""]:
         logging.info("No openvpn processes found to be killed.")
