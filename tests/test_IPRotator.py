@@ -6,8 +6,9 @@ from sirup.IPRotator import IPRotator
 from sirup.utils import RotationList
 
 
+@mock.patch("sirup.IPRotator.kill_all_connections")
 @mock.patch("getpass.getpass")
-def test_instantiate(mock_getpass, tmp_path):   
+def test_instantiate(mock_getpass, mock_kill, tmp_path):   
     config_files = ["file1", "file2", "file3"] # TODO: make this fixture available across tests. similar instance used in test_utils.py
     for f in config_files:
         (tmp_path / f).touch()
@@ -20,3 +21,4 @@ def test_instantiate(mock_getpass, tmp_path):
     mock_getpass.assert_called_once()
     assert instance.auth_file == "path/to/auth/file"
     assert isinstance(instance.config_queue, RotationList)
+    mock_kill.assert_called_once_with("my_password")

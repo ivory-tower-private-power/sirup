@@ -2,7 +2,9 @@ import getpass
 import logging
 import time
 from random import Random
+import requests
 from .utils import RotationList
+from .utils import kill_all_connections
 from .utils import list_files_with_full_path
 from .VPNConnector import VPNConnector
 
@@ -33,6 +35,7 @@ class IPRotator():
             pwd = getpass.getpass("Please enter your sudo password: ")
         self.pwd = pwd       # TODO: validate password? ie try `sudo ls`, and if it fails, raise an exception?
         self.connector = None # TODO: better name?
+        kill_all_connections(pwd)
 
     def connect(self, shuffle=False, max_trials=2000):
         """Connect to the server associated with the first config_file in the list.
@@ -58,6 +61,9 @@ class IPRotator():
                     waiting_time = 300 # try to see whether this helps
                     logging.info("Failed to connect %d times; waiting %d", i, waiting_time)
                 time.sleep(waiting_time)
+            except requests.ConnectionError:
+                kill_all_connections(self.pwd)
+                time.sleep(5)
             
             if connector.is_connected():
                 break
