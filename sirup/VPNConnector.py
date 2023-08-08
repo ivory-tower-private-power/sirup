@@ -10,6 +10,7 @@ from .raise_ovpn_exceptions import raise_ovpn_exceptions
 from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 from .utils import check_connection
 from .utils import get_ip
+from .utils import get_vpn_pids
 from .utils import sudo_read_file
 
 
@@ -71,10 +72,14 @@ class VPNConnector():
 
     def disconnect(self, pwd):
         "Disconnect the vpn and get back the base IP"
-        cmd = ["sudo", "-S", "kill", self._vpn_process_id]
-        subprocess.run(cmd, input=pwd.encode(), check=True)
-        self.log_file.remove() 
-        time.sleep(5)
+        openvpn_pids = get_vpn_pids()
+
+        if self._vpn_process_id in openvpn_pids:
+            cmd = ["sudo", "-S", "kill", self._vpn_process_id]
+            subprocess.run(cmd, input=pwd.encode(), check=True)
+            self.log_file.remove() 
+            time.sleep(5)
+        
         self.current_ip = get_ip()
         if self.current_ip != self.base_ip: 
             # is informative, but could be a problem with dynamic IPs (like eduroam). so only raise warning.

@@ -59,11 +59,12 @@ def test_start_vpn(mock_popen, mock_get_ip, mock_temp_file):
     mock_popen.assert_called_once_with(cmd_expected, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     process.communicate.assert_called_once_with("my_password".encode())
 
+@mock.patch("sirup.VPNConnector.get_vpn_pids")
 @mock.patch("sirup.VPNConnector.TemporaryFileWithRootPermission")
 @mock.patch("time.sleep")
 @mock.patch("sirup.VPNConnector.get_ip") 
 @mock.patch("subprocess.run")
-def test_disconnect(mock_run, mock_get_ip, mock_sleep, mock_temp_file): 
+def test_disconnect(mock_run, mock_get_ip, mock_sleep, mock_temp_file, mock_get_pids): 
     connector = VPNConnector("config_file", "auth_file")
 
     mock_get_ip.assert_called_once_with()
@@ -76,6 +77,8 @@ def test_disconnect(mock_run, mock_get_ip, mock_sleep, mock_temp_file):
 
     connector._vpn_process_id = str(1234) #pylint: disable=protected-access
     connector.log_file = mock_temp_file_instance
+
+    mock_get_pids.return_value = ["1234", "5992"]
 
     # Call
     connector.disconnect("my_password")
