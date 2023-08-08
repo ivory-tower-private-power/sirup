@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 from random import Random
+from subprocess import PIPE
 from unittest import mock
 import pytest
 import requests
@@ -149,3 +150,22 @@ def test_RotationList_shuffle():
     instance.shuffle(randomizer)
     assert len(instance) == len(mylist), "shuffling changes length"
     assert sum(x != y for x, y in zip(mylist, instance)) > 0, "shuffle does not change order"
+
+
+@mock.patch("subprocess.run")
+@mock.patch("subprocess.Popen")
+def test_kill_all_connections(mock_popen, mock_run):
+    """Kill all openvpn connections on the machine"""
+    pwd = "my_password"
+
+    # an alternative would be here: https://stackoverflow.com/questions/25692440/mocking-a-subprocess-call-in-python
+    mock_popen.return_value.communicate.return_value = ("123\n456\n", "error")
+    expected_pgrep_cmd = ["pgrep", "openvpn"]
+    expected_kill_cmd = ["sudo", "-S", "kill", "-15", "123", "456"]
+
+    # Call
+    utils.kill_all_connections(pwd)
+
+    # Assert
+    mock_popen.assert_called_once_with(expected_pgrep_cmd, stdout=PIPE, text=True)
+    mock_run.assert_called_once_with(expected_kill_cmd, input=pwd.encode(), capture_output=True, check=True)

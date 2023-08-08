@@ -105,3 +105,18 @@ class RotationList(list):
     def shuffle(self, randomizer):
         "Randomly shuffle the list of proxies. This changes the order by which we iterate through them."
         randomizer.shuffle(self)
+
+
+def kill_all_connections(pwd):
+    """Kill all openvpn connections on the machine"""
+    pgrep_command = ["pgrep", "openvpn"]
+    pgrep_process = subprocess.Popen(pgrep_command, stdout=subprocess.PIPE, text=True) #pylint: disable=consider-using-with
+    pgrep_output, _ = pgrep_process.communicate()
+
+    openvpn_pids = pgrep_output.strip().split('\n')
+
+    if openvpn_pids:
+        kill_command = ["sudo", "-S", "kill", "-15"] + openvpn_pids
+        subprocess.run(kill_command, input=pwd.encode(), capture_output=True, check=True)
+    else:
+        logging.info("No openvpn processes found to be killed.")
