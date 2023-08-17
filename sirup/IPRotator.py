@@ -22,9 +22,12 @@ class IPRotator():
         Args:
             auth_file (str): Path to the file containing authentication credentials for VPN connections.
             config_location (str): Path to the directory where VPN configuration files are stored.
-            pwd (str, optional): Sudo password. If not provided, the user will be prompted to enter it.
+            pwd (str, optional): Sudo password. If not provided, the user is asked to provide it at class instantiation.
             seed (int, optional): Seed for the random number generator to shuffle config files. 
             config_file_rule (str, optional): Rule to filter config files in the config_location.
+            track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`.
+                For long-running programs, it is better to set track_ip=False in order to respect the query limits 
+                of the IP address API.
         """
         # TODO: how to deal with properties from the VPNconnector? ie IP, is connected, base IP, ...
         
