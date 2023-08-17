@@ -15,14 +15,19 @@ from .utils import sudo_read_file
 
 
 class VPNConnector():
-    def __init__(self, config_file, auth_file):
+    def __init__(self, config_file, auth_file, track_ip=True):
         # TODO: docstring for parameters
         # TODO: require types? config_location should be os.path? then remove the pylint constraint above
+        # track_ip: not suited for long-running programms b/c of query limitation 
         self.config_file = config_file
         self.auth_file = auth_file
-        ip = get_ip()
-        self.current_ip = ip 
-        self.base_ip = ip
+        self.current_ip = None 
+        self.base_ip = None 
+        self.track_ip = track_ip
+        if track_ip:
+            ip = get_ip()
+            self.current_ip = ip 
+            self.base_ip = ip
         self._vpn_process_id = None # if not connected, this should be None
 
     def is_connected(self):
@@ -60,10 +65,11 @@ class VPNConnector():
                 print("connected!")
                 vpn_pid = sudo_read_file(file_with_process_id, pwd=pwd)
                 self._vpn_process_id = vpn_pid[0].strip()
-                try:
-                    self.current_ip = get_ip(config_file=self.config_file)
-                except requests.ConnectionError as exc: # TODO: use special exception here? 
-                    raise requests.ConnectionError("Cannot get IP address") from exc
+                if self.track_ip:
+                    try:
+                        self.current_ip = get_ip(config_file=self.config_file)
+                    except requests.ConnectionError as exc: # TODO: use special exception here? 
+                        raise requests.ConnectionError("Cannot get IP address") from exc
             else:
                 raise TimeoutError("Could not connect to vpn") 
             # TODO: should this be a specific openvpn connection error? not sure
@@ -80,8 +86,9 @@ class VPNConnector():
             self.log_file.remove() 
             time.sleep(5)
         
-        self.current_ip = get_ip()
-        if self.current_ip != self.base_ip: 
-            # is informative, but could be a problem with dynamic IPs (like eduroam). so only raise warning.
-            raise RuntimeWarning("Expected to go back to base IP address, but did not")
+        if self.track_ip:
+            self.current_ip = get_ip()
+            if self.current_ip != self.base_ip: 
+                # is informative, but could be a problem with dynamic IPs (like eduroam). so only raise warning.
+                raise RuntimeWarning("Expected to go back to base IP address, but did not")
         self._vpn_process_id = None
