@@ -37,19 +37,20 @@ class IPRotator():
         self.connector = None # TODO: better name?
         kill_all_connections(pwd)
 
-    def connect(self, shuffle=False, max_trials=2000):
+    def connect(self, shuffle=False, max_trials=2000, track_ip=True):
         """Connect to the server associated with the first config_file in the list.
 
         Args:
             shuffle (bool, optional): If True, shuffle the config files before connecting.
             max_trials (int, optional): Maximum number of connection attempts before raising an exception.
+            track_ip (bool, optional): If True, track the IP address between connections. 
         """
         i = 0 
         if shuffle:
             self.config_queue.shuffle(self.randomizer)
         # try to connect; if it fails, change the server and retry
         while True:
-            connector = VPNConnector(self.config_queue.pop_append(), self.auth_file)
+            connector = VPNConnector(self.config_queue.pop_append(), self.auth_file, track_ip=track_ip)
             try:
                 connector.connect(pwd=self.pwd)
             except TimeoutError as e:
