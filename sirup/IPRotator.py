@@ -15,7 +15,8 @@ class IPRotator():
                  config_location,
                  pwd=None,
                  seed=123,
-                 config_file_rule=None):
+                 config_file_rule=None,
+                 track_ip=True):
         """Initialize an IPRotator object.
 
         Args:
@@ -31,13 +32,14 @@ class IPRotator():
         self.config_queue = RotationList(config_files)
         self.auth_file = auth_file
         self.randomizer = Random(seed)
+        self.track_ip = track_ip
         if pwd is None:
             pwd = getpass.getpass("Please enter your sudo password: ")
         self.pwd = pwd       # TODO: validate password? ie try `sudo ls`, and if it fails, raise an exception?
         self.connector = None # TODO: better name?
         kill_all_connections(pwd)
 
-    def connect(self, shuffle=False, max_trials=2000, track_ip=True):
+    def connect(self, shuffle=False, max_trials=2000):
         """Connect to the server associated with the first config_file in the list.
 
         Args:
@@ -50,7 +52,7 @@ class IPRotator():
             self.config_queue.shuffle(self.randomizer)
         # try to connect; if it fails, change the server and retry
         while True:
-            connector = VPNConnector(self.config_queue.pop_append(), self.auth_file, track_ip=track_ip)
+            connector = VPNConnector(self.config_queue.pop_append(), self.auth_file, track_ip=self.track_ip)
             try:
                 connector.connect(pwd=self.pwd)
             except TimeoutError as e:
