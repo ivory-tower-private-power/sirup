@@ -1,6 +1,7 @@
 "Connect to a server with OpenVPN"
 
 # import logging # TODO: add logging properly
+import logging
 import os
 import subprocess
 import time
@@ -16,9 +17,15 @@ from .utils import sudo_read_file
 
 class VPNConnector():
     def __init__(self, config_file, auth_file, track_ip=True):
-        # TODO: docstring for parameters
-        # TODO: require types? config_location should be os.path? then remove the pylint constraint above
-        # track_ip: not suited for long-running programms b/c of query limitation 
+        """Initialize an VPNConnector object.
+
+        Args:
+            config_file (str): Full path and file name of the ovpn configuration file to connect to a server. 
+            auth_file (str): Full path and file name of the file with the authentication credentials for VPN connections.
+            track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`. 
+                For long-running programs, it is better to set track_ip=False in order to respect the query limits 
+                of the IP address API.
+        """
         self.config_file = config_file
         self.auth_file = auth_file
         self.current_ip = None 
@@ -56,13 +63,17 @@ class VPNConnector():
                 # process the log file, stdout and stderr here 
 
     def connect(self, pwd):
-        # DECIDED: use a temporary log file 
+        """Connect to a server.
+
+        Args:
+            pwd (str): User root password. This is necessary for openvpn.
+        """
         with TemporaryFileWithRootPermission(suffix=".txt", password=pwd) as file_with_process_id:
             self.start_vpn(pwd=pwd, proc_id=file_with_process_id) 
             connected = check_connection(self.log_file, timeout=30, pwd=pwd) # TODO: best to here directly check for 
             # anticipated errors (wrong auth file, wrong config file for now). then it's extendable
             if connected:
-                print("connected!")
+                logging.info("Connected with %d.", self.auth_file)
                 vpn_pid = sudo_read_file(file_with_process_id, pwd=pwd)
                 self._vpn_process_id = vpn_pid[0].strip()
                 if self.track_ip:
@@ -70,14 +81,14 @@ class VPNConnector():
                         self.current_ip = get_ip(config_file=self.config_file)
                     except requests.ConnectionError as exc: # TODO: use special exception here? 
                         raise requests.ConnectionError("Cannot get IP address") from exc
-            else:
+            else: 
                 raise TimeoutError("Could not connect to vpn") 
-            # TODO: should this be a specific openvpn connection error? not sure
             # TODO: print the log file? last messages of the log file?
 
 
     def disconnect(self, pwd):
-        "Disconnect the vpn and get back the base IP"
+        """Disconnect from the currentserver. If self.track_ip is True, also get back the base IP.
+        """
         openvpn_pids = get_vpn_pids()
 
         if self._vpn_process_id in openvpn_pids:
