@@ -73,7 +73,7 @@ class VPNConnector():
             connected = check_connection(self.log_file, timeout=30, pwd=pwd) # TODO: best to here directly check for 
             # anticipated errors (wrong auth file, wrong config file for now). then it's extendable
             if connected:
-                logging.info("Connected with %d.", self.auth_file)
+                logging.info("Connected with %s.", self.auth_file)
                 vpn_pid = sudo_read_file(file_with_process_id, pwd=pwd)
                 self._vpn_process_id = vpn_pid[0].strip()
                 if self.track_ip:
