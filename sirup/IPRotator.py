@@ -14,7 +14,7 @@ class IPRotator():
                  auth_file,
                  config_location,
                  pwd=None,
-                 seed=123,
+                 seed=None,
                  config_file_rule=None,
                  track_ip=True):
         """Initialize an IPRotator object.
