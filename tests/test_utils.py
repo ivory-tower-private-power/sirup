@@ -126,7 +126,9 @@ def test_list_files_with_full_path(tmp_path):
     
     output = utils.list_files_with_full_path(tmp_path, filter_rule)
     expected = [os.path.join(tmp_path, "udp_file_1"), os.path.join(tmp_path, "udp_file_2")]
-    assert output == expected, "does not apply filter rule correctly"
+    # different python versions order the output differently. test without the order
+    assert all(i in expected for i in output), "does not apply filter rule correctly"
+    assert all(i in output for i in expected), "does not apply filter rule correctly"
 
     # Without rule 
     filter_rule = None 
