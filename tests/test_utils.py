@@ -153,19 +153,27 @@ def test_RotationList_shuffle():
 
 
 @mock.patch("subprocess.run")
-@mock.patch("subprocess.Popen")
-def test_kill_all_connections(mock_popen, mock_run):
-    """Kill all openvpn connections on the machine"""
+@mock.patch("sirup.utils.get_vpn_pids") #patch the get_vpn_pids here
+def test_kill_all_connections(mock_get_vpn_pids, mock_run):
     pwd = "my_password"
 
     # an alternative would be here: https://stackoverflow.com/questions/25692440/mocking-a-subprocess-call-in-python
-    mock_popen.return_value.communicate.return_value = ("123\n456\n", "error")
-    expected_pgrep_cmd = ["pgrep", "openvpn"]
+    mock_get_vpn_pids.return_value = ["123", "456"]
     expected_kill_cmd = ["sudo", "-S", "kill", "-15", "123", "456"]
 
     # Call
     utils.kill_all_connections(pwd)
 
     # Assert
+    mock_run.assert_called_once_with(expected_kill_cmd, input=pwd.encode(), capture_output=True, check=False)
+
+
+@mock.patch("subprocess.Popen")
+def test_get_vpn_pids(mock_popen):
+    expected_pgrep_cmd = ["pgrep", "openvpn"]
+    mock_popen.return_value.communicate.return_value = ("123\n456\n", "error")
+    # Call
+    pids = utils.get_vpn_pids()
+    # Assert
     mock_popen.assert_called_once_with(expected_pgrep_cmd, stdout=PIPE, text=True)
-    mock_run.assert_called_once_with(expected_kill_cmd, input=pwd.encode(), capture_output=True, check=True)
+    assert pids == ["123", "456"], "Returns wrong pids"
