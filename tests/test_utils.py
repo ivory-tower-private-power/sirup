@@ -2,6 +2,7 @@
 import os
 import subprocess
 import time
+import warnings
 from random import Random
 from subprocess import PIPE
 from unittest import mock
@@ -160,12 +161,24 @@ def test_kill_all_connections(mock_get_vpn_pids, mock_run):
     # an alternative would be here: https://stackoverflow.com/questions/25692440/mocking-a-subprocess-call-in-python
     mock_get_vpn_pids.return_value = ["123", "456"]
     expected_kill_cmd = ["sudo", "-S", "kill", "-15", "123", "456"]
+    mock_run.return_value.returncode = 0
 
     # Call
     utils.kill_all_connections(pwd)
 
     # Assert
     mock_run.assert_called_once_with(expected_kill_cmd, input=pwd.encode(), capture_output=True, check=False)
+
+    # # Test also the non-zero exits status
+    mock_run.reset_mock()
+    mock_run.return_value.returncode = 1
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        utils.kill_all_connections(pwd)
+        assert len(w) == 1
+        assert issubclass(w[-1].category, UserWarning)
+        assert "returned with exit status 1" in str(w[-1].message)
 
 
 @mock.patch("subprocess.Popen")

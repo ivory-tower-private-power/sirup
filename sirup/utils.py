@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import time
+import warnings
 from subprocess import PIPE
 import requests
 from requests.adapters import HTTPAdapter
@@ -125,4 +126,8 @@ def kill_all_connections(pwd):
         logging.info("No openvpn processes found to be killed.")
     else:
         kill_command = ["sudo", "-S", "kill", "-15"] + openvpn_pids
-        subprocess.run(kill_command, input=pwd.encode(), capture_output=True, check=True)
+        rc = subprocess.run(kill_command, input=pwd.encode(), capture_output=True, check=False)
+        if rc.returncode != 0:
+            msg = f"Killing vpn connections returned with exit status {rc.returncode}"
+            warnings.warn(msg, UserWarning)
+            # logging.info(msg)
