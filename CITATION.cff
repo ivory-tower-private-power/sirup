@@ -9,7 +9,7 @@ authors:
     orcid: "https://orcid.org/0000-0000-0000-0000"
 date-released: 20??-MM-DD
 doi: <insert your DOI here>
-version: "0.1.0"
+version: "0.2.0"
 repository-code: "git@github.com:ivory-tower-private-power/sirup"
 keywords:
   - ip-rotation
