@@ -34,7 +34,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/sirup1
+      url: https://test.pypi.org/p/sirup
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
