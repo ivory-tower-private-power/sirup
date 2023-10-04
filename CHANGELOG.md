@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Fix uncaught exception when killing VPN connections. commit: e312ee0
+- Main functionality as per README.md, including documentation and tests
+- add workflow for publishing on pypi
 
 ## [0.0.1] - 1900-12-31
 
