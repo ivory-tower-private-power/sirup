@@ -8,7 +8,7 @@ authors:
     given-names: Flavio
     orcid: "https://orcid.org/0000-0000-0000-0000"
 date-released: 20??-MM-DD
-doi: <insert your DOI here>
+doi: 10.0000/FIXME
 version: "0.2.0"
 repository-code: "git@github.com:ivory-tower-private-power/sirup"
 keywords:
