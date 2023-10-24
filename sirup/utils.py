@@ -96,7 +96,10 @@ class RotationList(list):
     "Custom list for IP rotation."
     def __init__(self, *args):
         super().__init__(*args)
-    
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({super().__repr__()})"
+
     def pop_append(self):
         "Pop first element and append it at the end."
         el = self.pop(0)

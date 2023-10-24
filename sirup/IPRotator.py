@@ -30,7 +30,6 @@ class IPRotator():
                 of the IP address API.
         """
         # TODO: how to deal with properties from the VPNconnector? ie IP, is connected, base IP, ...
-        
         config_files = list_files_with_full_path(config_location, config_file_rule)
         self.config_queue = RotationList(config_files)
         self.auth_file = auth_file
@@ -40,7 +39,28 @@ class IPRotator():
             pwd = getpass.getpass("Please enter your sudo password: ")
         self.pwd = pwd       # TODO: validate password? ie try `sudo ls`, and if it fails, raise an exception?
         self.connector = None # TODO: better name?
-        kill_all_connections(pwd)
+        kill_all_connections(pwd)     
+
+        self._other_inputs = {
+            "config_location": config_location,
+            "seed": seed,
+            "config_file_rule": config_file_rule
+        }
+
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self._make_repr_inputs()})"
+    
+
+    def _make_repr_inputs(self):
+        kw_inputs = f"auth_file={self.auth_file!r}, "\
+            f"pwd=<SECRET>, "\
+            f"track_ip={self.track_ip!r}"
+
+        other_inputs = ", ".join(f"{k}={v}" for k, v in self._other_inputs.items())
+        inputs = kw_inputs + ", " + other_inputs
+        return inputs 
+
 
     def connect(self, shuffle=False, max_trials=2000):
         """Connect to the server associated with the first config_file in the list.

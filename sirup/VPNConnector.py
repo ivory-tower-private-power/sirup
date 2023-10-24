@@ -37,6 +37,11 @@ class VPNConnector():
             self.base_ip = ip
         self._vpn_process_id = None # if not connected, this should be None
 
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.config_file!r}, {self.auth_file!r})"
+
+
     def is_connected(self):
         """Indicates whether a VPN connection is active. 
 
@@ -78,7 +83,7 @@ class VPNConnector():
                 if os.path.exists(self.log_file.file_name):
                     log = sudo_read_file(file=self.log_file.file_name, pwd=pwd) # what happens if the log file does not exist?
                 raise_ovpn_exceptions(stdout.decode(), stderr.decode(), log)
-                
+
 
     def connect(self, pwd):
         """Connect to a server.
