@@ -10,6 +10,8 @@ Welcome to sirup's documentation!
   :maxdepth: 2
   :caption: Contents:
 
+  dns_leaks
+
 Indices and tables
 ==================
 

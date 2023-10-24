@@ -38,6 +38,8 @@ python -m pip install .
 
 The package has two functionalities: connecting to a VPN server, and rotating the IP address. 
 
+Before using the package, have a look at ["Preventing DNS leaks"](https://github.com/ivory-tower-private-power/sirup/blob/main/docs/dns_leaks.rst) to make sure the VPN service works properly.
+
 
 **1. Start up**
 
