@@ -3,7 +3,14 @@ from .utils import list_of_strings_contains_two_strings
 
 
 def raise_ovpn_exceptions(stdout, stderr, log): 
-    "Raise exceptions depending on the output and log of the openvpn commands."
+    """Raise exceptions depending on the output and log of the openvpn commands.
+    
+    Raises
+        FileNotFoundError: when the authentication file for openvpn cannot be found.
+        RuntimeError:
+            - when there is a problem with the configuration file
+            - in any other case
+    """
     base_error_message = None
     if log is not None:
         msg0 = "Options error: --auth-user-pass fails with"

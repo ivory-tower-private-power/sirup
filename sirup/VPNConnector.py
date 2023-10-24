@@ -38,11 +38,29 @@ class VPNConnector():
         self._vpn_process_id = None # if not connected, this should be None
 
     def is_connected(self):
-        "Return True if a VPN connection is active."
+        """Indicates whether a VPN connection is active. 
+
+        Returns:
+            bool: True if a VPN connection is running.        
+        """
         return self._vpn_process_id is not None
 
     def start_vpn(self, pwd, proc_id=None):
-        "Start an OpenVPN connection."
+        """Start an OpenVPN connection.
+
+        Starts an OpenVPN process. The log is written to a temporary file.
+        The process is opened as a daemon: This means that the process runs in the background and 
+        releases the terminal after start-up.
+
+        Args:
+            pwd (str):  The user's root password.
+            proc_id (str, optional):  argument passed with `--wirtepid` to `openvpn`. It is 
+               the filename to which the ID of the vpn process is written.
+
+        Raises:
+            Exceptions when opening the connection fails. 
+               The exceptions are specified in `sirup.raise_ovpn_exceptions`.
+        """
         self.log_file = TemporaryFileWithRootPermission(password=pwd, suffix=".log")
         self.log_file.create(file_name="openvpn")
         cmd = ["sudo", "-S", "openvpn",
@@ -60,7 +78,7 @@ class VPNConnector():
                 if os.path.exists(self.log_file.file_name):
                     log = sudo_read_file(file=self.log_file.file_name, pwd=pwd) # what happens if the log file does not exist?
                 raise_ovpn_exceptions(stdout.decode(), stderr.decode(), log)
-                # process the log file, stdout and stderr here 
+                
 
     def connect(self, pwd):
         """Connect to a server.
@@ -87,7 +105,11 @@ class VPNConnector():
 
 
     def disconnect(self, pwd):
-        """Disconnect from the currentserver. If self.track_ip is True, also get back the base IP.
+        """Disconnect from the currentserver. 
+        If self.track_ip is True, also get back the base IP. 
+
+        Args:
+            pwd (str): User root password. This is necessary for openvpn.
         """
         openvpn_pids = get_vpn_pids()
 

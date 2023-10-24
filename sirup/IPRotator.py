@@ -48,7 +48,6 @@ class IPRotator():
         Args:
             shuffle (bool, optional): If True, shuffle the config files before connecting.
             max_trials (int, optional): Maximum number of connection attempts before raising an exception.
-            track_ip (bool, optional): If True, track the IP address between connections. 
         """
         i = 0 
         if shuffle:
