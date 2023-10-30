@@ -120,12 +120,12 @@ def sudo_read_file(file, pwd=None):
 
 def check_password(pwd): # TODO: use this only in the rotator class and test it when writing this.
     "Run simple command to see if password is correct"
-    with subprocess.Popen(['sudo', "-S", "ls"], stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-        _, stderr = proc.communicate(input=f"{pwd}\n".encode())
+    with subprocess.Popen(['sudo', "ls"], stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
+        _, _ = proc.communicate(input=f"{pwd}\n".encode())
         if proc.returncode != 0:
             raise RuntimeError("Wrong password")
-        # print(stdout)
-        print(stderr.decode())
+        
+    return True
 
 def list_files_with_full_path(directory, rule=None):
     """Collect all files in a directory and return a list of them with their full path.
