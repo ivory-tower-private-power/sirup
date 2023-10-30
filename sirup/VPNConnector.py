@@ -59,7 +59,7 @@ class VPNConnector():
 
         Args:
             pwd (str):  The user's root password.
-            proc_id (str, optional):  argument passed with `--wirtepid` to `openvpn`. It is 
+            proc_id (str, optional):  argument passed with `--writepid` to `openvpn`. It is 
                the filename to which the ID of the vpn process is written.
 
         Raises:
@@ -67,7 +67,7 @@ class VPNConnector():
                The exceptions are specified in `sirup.raise_ovpn_exceptions`.
         """
         self.log_file = TemporaryFileWithRootPermission(password=pwd, suffix=".log")
-        self.log_file.create(file_name="openvpn")
+        self.log_file.create_path(file_name="openvpn")
         cmd = ["sudo", "-S", "openvpn",
             "--config", self.config_file,
             "--auth-user-pass", self.auth_file,
@@ -110,8 +110,8 @@ class VPNConnector():
 
 
     def disconnect(self, pwd):
-        """Disconnect from the currentserver. 
-        If self.track_ip is True, also get back the base IP. 
+        """Disconnect from the current server. 
+        If `self.track_ip` is True, also get back the base IP. 
 
         Args:
             pwd (str): User root password. This is necessary for openvpn.
