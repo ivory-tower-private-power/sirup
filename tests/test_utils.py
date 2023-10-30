@@ -208,3 +208,27 @@ def test_get_vpn_pids(mock_popen):
     # Assert
     mock_popen.assert_called_once_with(expected_pgrep_cmd, stdout=PIPE, text=True)
     assert pids == ["123", "456"], "Returns wrong pids"
+
+
+@mock.patch("subprocess.Popen")
+def test_check_password(mock_popen):
+    # Test when password is wrong
+    process = mock_popen.return_value.__enter__.return_value
+    process.returncode = 1
+    process.communicate.return_value = (b"", b"nothing")
+
+    with pytest.raises(RuntimeError, match="Wrong password"):
+        utils.check_password("wrong_password")
+
+    mock_popen.assert_called_once_with(['sudo', "ls"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    process.communicate.assert_called_once_with(input="wrong_password\n".encode())
+
+    # Test when correct password provided
+    mock_popen.reset_mock()
+    process.reset_mock()
+    process.communicate.reset_mock() 
+
+    process.communicate.return_value = (b"", b"All good!")
+    process.returncode = 0
+    assert utils.check_password("my_password"), "fails to recognize correct password"
+    process.communicate.assert_called_once_with(input="my_password\n".encode())
