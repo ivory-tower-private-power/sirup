@@ -4,6 +4,7 @@ import time
 from random import Random
 import requests
 from .utils import RotationList
+from .utils import check_password
 from .utils import kill_all_connections
 from .utils import list_files_with_full_path
 from .VPNConnector import VPNConnector
@@ -37,7 +38,8 @@ class IPRotator():
         self.track_ip = track_ip
         if pwd is None:
             pwd = getpass.getpass("Please enter your sudo password: ")
-        self.pwd = pwd       # TODO: validate password? ie try `sudo ls`, and if it fails, raise an exception?
+        assert check_password(pwd), "Wrong sudo password provided"
+        self.pwd = pwd
         self.connector = None # TODO: better name?
         kill_all_connections(pwd)     
 
