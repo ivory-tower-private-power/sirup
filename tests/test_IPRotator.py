@@ -80,3 +80,13 @@ def test_disconnect(mock_connector, iprotator_instance):
     iprotator_instance.disconnect()
     mock_disconnect.assert_called_once_with("my_password")
     assert iprotator_instance.connector is None, "connector not reset after disconnecting."
+
+
+@mock.patch.object(IPRotator, "disconnect")
+@mock.patch.object(IPRotator, "connect")
+def test_rotate(mock_connect, mock_disconnect, iprotator_instance):   
+    # Main call
+    iprotator_instance.rotate()
+    # Assert 
+    mock_disconnect.assert_called_once_with()
+    mock_connect.assert_called_once_with()
