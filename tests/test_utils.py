@@ -10,6 +10,18 @@ import pytest
 import requests
 from sirup import utils
 
+## Define fixtures
+@pytest.fixture
+def list_instance():
+    return [1, 2, 3, 4, 5]
+
+@pytest.fixture
+def rotation_list_instance(list_instance):
+    instance = utils.RotationList(list_instance)
+    return instance
+
+
+## Tests
 
 @mock.patch("sirup.utils.requests.Session.get")
 def test_get_ip(mock_get):
@@ -137,22 +149,26 @@ def test_list_files_with_full_path(tmp_path):
     assert len(output) == len(expected), "different number of elements"
     assert all([e in output for e in expected]), "not all expected elements" #pylint: disable=use-a-generator 
 
-def test_RotationList_pop_append():
-    mylist = [1, 2, 3, 4, 5]
-    instance = utils.RotationList(mylist)
-    assert instance == mylist
 
-    first = instance.pop_append()
+def test_RotationList_pop_append(list_instance, rotation_list_instance):
+    assert rotation_list_instance == list_instance
+
+    first = rotation_list_instance.pop_append()
     assert first == 1, "does not pop first element"
-    assert instance[-1] == 1, "does not re-append correctly"
+    assert rotation_list_instance[-1] == 1, "does not re-append correctly"
 
-def test_RotationList_shuffle():
-    mylist = [1, 2, 3, 4, 5]
-    instance = utils.RotationList(mylist)
+
+def test_RotationList_shuffle(list_instance, rotation_list_instance):
     randomizer = Random(3)
-    instance.shuffle(randomizer)
-    assert len(instance) == len(mylist), "shuffling changes length"
-    assert sum(x != y for x, y in zip(mylist, instance)) > 0, "shuffle does not change order"
+    rotation_list_instance.shuffle(randomizer)
+    assert len(rotation_list_instance) == len(list_instance), "shuffling changes length"
+    assert sum(x != y for x, y in zip(list_instance, rotation_list_instance)) > 0, "shuffle does not change order"
+
+
+def test_RotationList_repr(list_instance, rotation_list_instance):
+    result = repr(rotation_list_instance)
+    expected = f"RotationList({list_instance})"
+    assert result == expected, "__repr__ returns incorrect string"
 
 
 @mock.patch("subprocess.run")
