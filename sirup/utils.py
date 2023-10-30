@@ -11,15 +11,24 @@ from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 
 
 def get_ip(echo=False, config_file=None):
-    "Query the current IP address of the computer."
+    """Query the current IP address of the computer.
+
+    The function calls `ifconfig.me` and retrieves the IP address.
+
+    Args:
+        echo (bool, optional): If `True`, logging prints the retrieved IP address
+        config_file (str, optional): Name of the vpn configuration file currently in use.
+            If supplied, logging prints the name of the config file if the IP address cannot
+            be retrieved
+    """
     # sources:
     # https://stackoverflow.com/questions/23013220/max-retries-exceeded-with-url-in-requests,
     # https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html
     session = requests.Session() 
     retry = Retry(total=3, backoff_factor=0.5)
     adapter = HTTPAdapter(max_retries=retry)
-    session.mount("https://", adapter) # TODO: why did I add this in the first place? can I do without? 
-    session.mount("http://", adapter) # need to update the tests for this 
+    session.mount("https://", adapter) 
+    session.mount("http://", adapter) 
 
     try:
         response = session.get("https://ifconfig.me", timeout=3)
@@ -38,14 +47,40 @@ def get_ip(echo=False, config_file=None):
         raise requests.ConnectionError("Failed to get the IP address")
     
 
-def list_of_strings_contains_two_strings(strings_to_check, list_of_strings): 
-    "Test whether two strings in `strings_to_check` are contained in at least one of the list of strings"
+def lookup_strings_in_list(strings_to_check, list_of_strings): 
+    """Scan a list of strings for presence of one or multiple strings in the same element. 
+
+    Args:
+        strings_to_check (list): the strings to look for.
+        list_of_strings (list): the strings to scan.
+
+    Returns:
+        bool: `True` if there is at least one element in `list_of_strings` that contains all strings in `strings_to_check`.
+
+    Example:
+        >>> lookup_strings_in_list(["hello", "world"], ["hello, wonderful world", "hello universe"])
+        True
+    """
     elements_contain_two_strings = [all([s in element for s in strings_to_check]) for element in list_of_strings] #pylint: disable=use-a-generator
     return any(elements_contain_two_strings)
 
 
 def check_connection(log_file, timeout, pwd, waiting_time=2):
-    "Wait and test for established connection until `timeout`."
+    """Wait and test for established connection until `timeout`.
+
+    The function repeatedly scans the log file of the openvpn process and looks a string
+    that indicates that the vpn connection was established. It exits when the string is found
+    or `timeout` is reached.
+
+    Args:
+        log_file (str): path to the log file of the vpn process.
+        timeout (int): maximum time to wait for a successful conection.
+        pwd (str): user root password.
+        waiting_time (int, optional): Number of seconds to wait between consecutive scans.
+
+    Returns:
+        bool: indicates whether connection is established.
+    """
     start_time = time.time()
     connected = False
     while time.time() - start_time < timeout and not connected:
@@ -55,16 +90,28 @@ def check_connection(log_file, timeout, pwd, waiting_time=2):
 
     return connected 
 
-def sudo_read_file(file, pwd=None): # TODO: move this to utils?
-    "Read a file with root permission" 
-    # TODO: the if check here is not covered in tests
+def sudo_read_file(file, pwd=None):
+    """Read a file with root permission to a list.
+    
+    Args:
+        file (str or TemporaryFileWithRootPermission): the file to read
+        pwd (str, optional): root password for the file. If file is 
+        a `TemporaryFileWithRootPermission` and no password is provided, it 
+        is taken from the file object.
+
+    Returns:
+        list: Content of the file, each line is one element in the list. 
+    """ 
     if isinstance(file, TemporaryFileWithRootPermission):
         file = file.file_name
+        if pwd is None:
+            pwd = file.password
     cmd = ["cat", file]
     if pwd is None:
         output = subprocess.run(cmd, capture_output=True, check=True)
     else:
         cmd.insert(0, "sudo")
+        cmd.insert(1, "-S")
         output = subprocess.run(cmd, input=pwd.encode(), capture_output=True, check=True)
     
     content = output.stdout.decode()
@@ -82,8 +129,14 @@ def check_password(pwd): # TODO: use this only in the rotator class and test it 
 
 def list_files_with_full_path(directory, rule=None):
     """Collect all files in a directory and return a list of them with their full path.
-    
-    `rule` is a lambda function that checks if a condition is met and return False otherwise.
+
+    Args:
+        directory (str): directory path
+        rule (lambda, optional): a lambda function that returns a `bool`. If supplied, the function
+          filters the files in the directory by `True`.
+
+    Returns:
+        list: files, possibly filtered, with the full path. 
     """
     files = os.listdir(directory)
     if rule is not None:
@@ -107,11 +160,20 @@ class RotationList(list):
         return el
     
     def shuffle(self, randomizer):
-        "Randomly shuffle the list of proxies. This changes the order by which we iterate through them."
+        """Randomly shuffle the list of proxies. This changes the order by which we iterate through them.
+
+        Args:
+            randomizer (random.Random): pseudo-random number generator.        
+        """
         randomizer.shuffle(self)
 
 
-def get_vpn_pids(): # TODO: write test; adjust below
+def get_vpn_pids():
+    """Extract all openvpn process ids on the machine. 
+
+    Returns:
+        list: all openvpn process IDs.
+    """
     pgrep_command = ["pgrep", "openvpn"]
     pgrep_process = subprocess.Popen(pgrep_command, stdout=subprocess.PIPE, text=True) #pylint: disable=consider-using-with
     pgrep_output, _ = pgrep_process.communicate()
@@ -121,7 +183,11 @@ def get_vpn_pids(): # TODO: write test; adjust below
 
 
 def kill_all_connections(pwd):
-    """Kill all openvpn connections on the machine"""
+    """Kill all openvpn connections on the machine
+    
+    Args:
+        pwd (str): root password to the machine.    
+    """
 
     openvpn_pids = get_vpn_pids()
 
