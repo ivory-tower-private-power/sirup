@@ -93,8 +93,7 @@ class VPNConnector():
         """
         with TemporaryFileWithRootPermission(suffix=".txt", password=pwd) as file_with_process_id:
             self.start_vpn(pwd=pwd, proc_id=file_with_process_id) 
-            connected = check_connection(self.log_file, timeout=30, pwd=pwd) # TODO: best to here directly check for 
-            # anticipated errors (wrong auth file, wrong config file for now). then it's extendable
+            connected = check_connection(self.log_file, timeout=30, pwd=pwd) 
             if connected:
                 logging.info("Connected with %s.", self.config_file)
                 vpn_pid = sudo_read_file(file_with_process_id, pwd=pwd)
@@ -106,7 +105,6 @@ class VPNConnector():
                         raise requests.ConnectionError("Cannot get IP address") from exc
             else: 
                 raise TimeoutError("Could not connect to vpn") 
-            # TODO: print the log file? last messages of the log file?
 
 
     def disconnect(self, pwd):
