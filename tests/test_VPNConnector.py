@@ -88,3 +88,10 @@ def test_disconnect(mock_run, mock_get_ip, mock_sleep, mock_temp_file, mock_get_
     mock_run.assert_called_once_with(expected_cmd, input="my_password".encode(), check=True)
     mock_get_ip.assert_called_once_with()
     mock_sleep.assert_called_once_with(5)
+
+
+def test_repr():
+    connector = VPNConnector("config_file", "auth_file", track_ip=False)
+    repr_result = repr(connector) 
+    repr_expected = "VPNConnector('config_file', 'auth_file', track_ip=False)"
+    assert repr_result == repr_expected, "prints wrong repr"

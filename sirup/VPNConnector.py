@@ -39,7 +39,7 @@ class VPNConnector():
 
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.config_file!r}, {self.auth_file!r})"
+        return f"{self.__class__.__name__}({self.config_file!r}, {self.auth_file!r}, track_ip={self.track_ip!r})"
 
 
     def is_connected(self):
