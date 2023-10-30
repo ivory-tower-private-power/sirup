@@ -14,7 +14,7 @@ def test_instantiated_correctly():
 
 def test_create_nonexisting_file():
     instance = TemporaryFileWithRootPermission("my_password", ".txt")
-    instance.create("my_file") 
+    instance.create_path("my_file") 
     expected = os.path.join(tempfile.gettempdir(), "my_file" + ".txt")
     assert instance.file_name == expected, "create does not give correct file_name attribute."
 
@@ -23,7 +23,7 @@ def test_create_nonexisting_file():
 def test_create_existing_file(mock_exists, mock_remove):
     instance = TemporaryFileWithRootPermission("my_password", ".txt")
     mock_exists.return_value = True 
-    instance.create("my_file")
+    instance.create_path("my_file")
     expected_full_file_name = os.path.join(tempfile.gettempdir(), "my_file.txt")
     mock_exists.assert_called_once_with(expected_full_file_name)
     mock_remove.assert_called_once_with()
