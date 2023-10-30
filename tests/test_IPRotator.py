@@ -92,4 +92,24 @@ def test_connect(mock_getpass, mock_kill, mock_check_pw, mock_connector, mock_sl
 
 #pylint: enable=too-many-arguments
 
-        
+#pylint: disable=unused-argument
+@mock.patch("sirup.IPRotator.VPNConnector")
+@mock.patch("sirup.IPRotator.check_password")
+@mock.patch("sirup.IPRotator.kill_all_connections")
+@mock.patch("getpass.getpass")
+def test_disconnect(mock_getpass, mock_kill, mock_check_pw, mock_connector, tmp_path):
+    config_files = ["file1", "file2", "file3"] # TODO: make this fixture available across tests. similar instance used in test_utils.py
+    for f in config_files:
+        (tmp_path / f).touch()
+    
+    mock_getpass.return_value = "my_password"
+    mock_check_pw.return_value = True
+
+    instance = IPRotator("path/to/auth/file", tmp_path)
+    instance.connector = mock_connector.return_value
+    mock_disconnect = instance.connector.disconnect 
+
+    instance.disconnect()
+    mock_disconnect.assert_called_once_with("my_password")
+    assert instance.connector is None, "connector not reset after disconnecting."
+#pylint: enable=unused-argument
