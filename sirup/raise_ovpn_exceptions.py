@@ -1,11 +1,11 @@
 
-from .utils import list_of_strings_contains_two_strings
+from .utils import lookup_strings_in_list
 
 
 def raise_ovpn_exceptions(stdout, stderr, log): 
     """Raise exceptions depending on the output and log of the openvpn commands.
     
-    Raises
+    Raises:
         FileNotFoundError: when the authentication file for openvpn cannot be found.
         RuntimeError:
             - when there is a problem with the configuration file
@@ -15,7 +15,7 @@ def raise_ovpn_exceptions(stdout, stderr, log):
     if log is not None:
         msg0 = "Options error: --auth-user-pass fails with"
         msg1 = "No such file or directory"
-        if list_of_strings_contains_two_strings([msg0, msg1], log):
+        if lookup_strings_in_list([msg0, msg1], log):
             raise FileNotFoundError("Wrong authentication file.")
         # print other information here for unanticipated situations
         base_error_message = f"""

@@ -55,18 +55,18 @@ def test_get_ip(mock_get):
     mock_get.assert_called_once_with("https://ifconfig.me", timeout=3)
 
 
-def test_list_of_strings_contains_two_strings():
+def test_lookup_strings_in_list():
     strings_to_check = ["message 1", "message 2"]
     list_of_strings = ["here is message 1 and here is message 2", 
                         "here is message 1 but not the other",
                         "none"]
 
-    result = utils.list_of_strings_contains_two_strings(strings_to_check=strings_to_check, list_of_strings=list_of_strings)
+    result = utils.lookup_strings_in_list(strings_to_check=strings_to_check, list_of_strings=list_of_strings)
     assert result, "returns False when True expected"
 
     list_of_strings = ["here is message 1 but not the other",
                         "none"]
-    result = utils.list_of_strings_contains_two_strings(strings_to_check=strings_to_check, list_of_strings=list_of_strings)
+    result = utils.lookup_strings_in_list(strings_to_check=strings_to_check, list_of_strings=list_of_strings)
     assert not result, "returns True when False expected"
 
 
@@ -78,7 +78,7 @@ def test_sudo_read_file_without_sudo(mocker):
 def test_sudo_read_file_with_sudo(mocker):
     mocker.patch("subprocess.run")
     utils.sudo_read_file("myfile.txt", "my_password")
-    subprocess.run.assert_called_once_with(["sudo", "cat", "myfile.txt"], input="my_password".encode(), capture_output=True, check=True)
+    subprocess.run.assert_called_once_with(["sudo", "-S", "cat", "myfile.txt"], input="my_password".encode(), capture_output=True, check=True)
 
 
 @pytest.fixture
