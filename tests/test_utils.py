@@ -10,6 +10,7 @@ import pytest
 import requests
 from sirup import utils
 
+
 ## Define fixtures
 @pytest.fixture
 def list_instance():
