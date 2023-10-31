@@ -16,16 +16,24 @@ from .utils import sudo_read_file
 
 
 class VPNConnector():
-    def __init__(self, config_file, auth_file, track_ip=True):
-        """Initialize an VPNConnector object.
+    """Class to connect and disconnect to a single VPN server.
 
-        Args:
-            config_file (str): Full path and file name of the ovpn configuration file to connect to a server. 
-            auth_file (str): Full path and file name of the file with the authentication credentials for VPN connections.
-            track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`. 
-                For long-running programs, it is better to set track_ip=False in order to respect the query limits 
-                of the IP address API.
-        """
+    Args:
+        config_file (str): Full path and file name of the `OpenVPN` configuration file to connect to a server. 
+        auth_file (str): Full path and file name of the file with the authentication credentials for VPN connections.
+        track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`. 
+            For long-running programs, it is better to set track_ip=False in order to respect the query limits 
+            of the IP address API.
+
+    Attributes:
+        config_file (str): Full path and file name of the `OpenVPN` configuration file to connect to a server. 
+        auth_file (str): Full path and file name of the file with the authentication credentials for VPN connections.
+        current_ip (None or str): If `track_ip` is `True`, the IP address of the machine that is currently visible.
+        base_ip (None or str): If `track_ip` is `True`, the IP address when no VPN tunnel is active.
+        track_ip (bool): If `True`, queries the IP address of the machine after each connect and disconnect.
+    """
+
+    def __init__(self, config_file, auth_file, track_ip=True):
         self.config_file = config_file
         self.auth_file = auth_file
         self.current_ip = None 
@@ -51,15 +59,15 @@ class VPNConnector():
         return self._vpn_process_id is not None
 
     def start_vpn(self, pwd, proc_id=None):
-        """Start an OpenVPN connection.
+        """Start an `OpenVPN` connection.
 
-        Starts an OpenVPN process. The log is written to a temporary file.
+        Starts an `OpenVPN` process. The log is written to a temporary file.
         The process is opened as a daemon: This means that the process runs in the background and 
         releases the terminal after start-up.
 
         Args:
             pwd (str):  The user's root password.
-            proc_id (str, optional):  argument passed with `--writepid` to `openvpn`. It is 
+            proc_id (str, optional):  argument passed with `--writepid` to `OpenVPN`. It is 
                the filename to which the ID of the vpn process is written.
 
         Raises:
@@ -89,7 +97,7 @@ class VPNConnector():
         """Connect to a server.
 
         Args:
-            pwd (str): User root password. This is necessary for openvpn.
+            pwd (str): User root password. This is necessary for `OpenVPN`.
         """
         with TemporaryFileWithRootPermission(suffix=".txt", password=pwd) as file_with_process_id:
             self.start_vpn(pwd=pwd, proc_id=file_with_process_id) 
@@ -112,7 +120,7 @@ class VPNConnector():
         If `self.track_ip` is True, also get back the base IP. 
 
         Args:
-            pwd (str): User root password. This is necessary for openvpn.
+            pwd (str): User root password. This is necessary for `OpenVPN`.
         """
         openvpn_pids = get_vpn_pids()
 
