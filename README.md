@@ -1,14 +1,14 @@
 # sirup: simple IP rotation using python
 
 [![github license badge](https://img.shields.io/github/license/ivory-tower-private-power/sirup)](https://github.com/ivory-tower-private-power/sirup)
-[![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://www.research-software.nl/software/sirup) 
+[![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://research-software-directory.org/software/sirup) 
 [![workflow pypi badge](https://img.shields.io/pypi/v/sirup.svg?colorB=blue)](https://pypi.python.org/project/sirup/)
 <!-- [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)  -->
 <!-- [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>)  -->
 [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
 [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=alert_status)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
 [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=coverage)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
-[![Documentation Status](https://readthedocs.org/projects/sirup/badge/?version=latest)](https://sirup.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/sirup-vpn/badge/?version=latest)](https://sirup-vpn.readthedocs.io/en/latest/?badge=latest)
 [![build](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml)
 [![cffconvert](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml)
 [![sonarcloud](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml) 
@@ -21,7 +21,7 @@ A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP add
 ## What is required
 - An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark)
 - A linux OS with superuser rights
-- `openvpn` for linux. [Installation](https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos).
+- `openvpn` for linux. [Installation](https://mullvad.net/en/help/linux-openvpn-installation/).
 
 The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
