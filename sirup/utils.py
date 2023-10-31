@@ -58,6 +58,7 @@ def lookup_strings_in_list(strings_to_check, list_of_strings):
         bool: `True` if there is at least one element in `list_of_strings` that contains all strings in `strings_to_check`.
 
     Example:
+        >>> from sirup.utils import lookup_strings_in_list
         >>> lookup_strings_in_list(["hello", "world"], ["hello, wonderful world", "hello universe"])
         True
     """
