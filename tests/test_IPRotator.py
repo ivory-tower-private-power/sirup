@@ -40,23 +40,25 @@ def test_repr(iprotator_instance):
     #pylint: enable=protected-access
 
 
+@mock.patch.object(RotationList, "shuffle")
 @mock.patch("sirup.IPRotator.time.sleep")
 @mock.patch("sirup.IPRotator.VPNConnector")
 @mock.patch("sirup.IPRotator.kill_all_connections")
-def test_connect(mock_kill, mock_connector, mock_sleep, iprotator_instance):    
+def test_connect(mock_kill, mock_connector, mock_sleep, mock_rotation_list, iprotator_instance):    
    
     # We'll be using the return value of the mock_connector: (1) for the connect() fct; (2) for the assertion below
     mock_connector = mock_connector.return_value
 
     # Test without errors
     mock_connect = mock_connector.connect 
-    iprotator_instance.connect()
+    iprotator_instance.connect(shuffle=True)
     mock_connect.assert_called_once_with(pwd="my_password")
     # pylint: disable=protected-access
     assert iprotator_instance.connector._extract_mock_name() == mock_connector._extract_mock_name(), \
         "iprotator_instance has uncorrect `connector` attribute"
     # pylint: enable=protected-access
-    
+    mock_rotation_list.assert_called_once_with(iprotator_instance.randomizer)
+
     # Test with errors: TimeoutError when max trials is reached
     mock_connect.reset_mock()
     mock_connect.side_effect = TimeoutError

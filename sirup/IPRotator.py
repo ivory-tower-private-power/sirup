@@ -104,6 +104,7 @@ class IPRotator():
         self.connector.disconnect(self.pwd)
         self.connector = None
 
+
     def rotate(self):
         """Rotate to the next server.
         """
