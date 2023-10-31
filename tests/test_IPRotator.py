@@ -45,11 +45,18 @@ def test_repr(iprotator_instance):
 @mock.patch("sirup.IPRotator.kill_all_connections")
 def test_connect(mock_kill, mock_connector, mock_sleep, iprotator_instance):    
    
+    # We'll be using the return value of the mock_connector: (1) for the connect() fct; (2) for the assertion below
+    mock_connector = mock_connector.return_value
+
     # Test without errors
-    mock_connect = mock_connector.return_value.connect # NOTE: AAR -- need to mock the methods from the return value
+    mock_connect = mock_connector.connect 
     iprotator_instance.connect()
     mock_connect.assert_called_once_with(pwd="my_password")
-
+    # pylint: disable=protected-access
+    assert iprotator_instance.connector._extract_mock_name() == mock_connector._extract_mock_name(), \
+        "iprotator_instance has uncorrect `connector` attribute"
+    # pylint: enable=protected-access
+    
     # Test with errors: TimeoutError when max trials is reached
     mock_connect.reset_mock()
     mock_connect.side_effect = TimeoutError
