@@ -11,6 +11,36 @@ from .VPNConnector import VPNConnector
 
 
 class IPRotator():
+    """Class to manage a set of VPN configuration files and rotate the IP by iterating across the configuration files. 
+
+    Args:
+        auth_file (str): Path to the file containing authentication credentials for VPN connections.
+        config_location (str): Path to the directory where VPN configuration files are stored.
+        pwd (str, optional): Sudo password. If not provided, the user is asked to provide it at class instantiation.
+        seed (int, optional): Seed for the random number generator to shuffle config files. 
+        config_file_rule (str, optional): Rule to filter config files in the config_location.
+        track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`.
+            For long-running programs, it is better to set track_ip=False in order to respect the query limits 
+            of the IP address API.
+
+    Attributes:
+        config_queue (sirup.utils.RotationList): List of `OpenVPN` configuration files.
+
+        auth_file (str): `OpenVPN` authentication file with the user credentials.
+
+        randomizer (random.Random): Pseudo-random number generator to shuffle the config_queue. 
+
+        track_ip (bool): Indicates whether the IP address should be tracked between connections, disconnections and rotations. 
+            If `True`, queries `https://ifconfig.me` for the IP address after each change of the IP address, which is not recommended for
+            long-running programs.
+
+        pwd (str): User root password to access the `OpenVPN` command-line interface.
+
+        connector (None or sirup.VPNConnector.VPNConnector): If a VPN tunnel is active, the `sirup.VPNConnector` object that is responsible 
+            for the connection.
+
+    """
+
     def __init__(self, # pylint: disable=too-many-arguments
                  auth_file,
                  config_location,
@@ -18,18 +48,6 @@ class IPRotator():
                  seed=None,
                  config_file_rule=None,
                  track_ip=True):
-        """Initialize an IPRotator object.
-
-        Args:
-            auth_file (str): Path to the file containing authentication credentials for VPN connections.
-            config_location (str): Path to the directory where VPN configuration files are stored.
-            pwd (str, optional): Sudo password. If not provided, the user is asked to provide it at class instantiation.
-            seed (int, optional): Seed for the random number generator to shuffle config files. 
-            config_file_rule (str, optional): Rule to filter config files in the config_location.
-            track_ip (bool, optional): If True, the IP address is queried after each `connect` and `disconnect`.
-                For long-running programs, it is better to set track_ip=False in order to respect the query limits 
-                of the IP address API.
-        """
         # TODO: how to deal with properties from the VPNconnector? ie IP, is connected, base IP, ...
         config_files = list_files_with_full_path(config_location, config_file_rule)
         self.config_queue = RotationList(config_files)
@@ -65,7 +83,7 @@ class IPRotator():
 
 
     def connect(self, shuffle=False, max_trials=2000):
-        """Connect to the server associated with the first config_file in the list.
+        """Connect to the server associated with the first configuration file in `self.config_queue`.
 
         Args:
             shuffle (bool, optional): If True, shuffle the config files before connecting.
