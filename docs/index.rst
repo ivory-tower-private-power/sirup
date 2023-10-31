@@ -6,10 +6,14 @@
 Welcome to sirup's documentation!
 ==========================================================
 
-.. toctree::
-  :maxdepth: 2
-  :caption: Contents:
+Sirup is an open-source Python package that makes it easy to connect to, and rotate across, VPN servers provided by services such as ProtonVPN and Surfshark. The package works through the `OpenVPN` interface on Linux.
 
+.. toctree::
+  :maxdepth: 1
+  :caption: Contents
+
+  installation
+  getting_started
   dns_leaks
 
 Indices and tables

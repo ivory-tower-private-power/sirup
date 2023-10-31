@@ -1,3 +1,5 @@
+.. _dns_leaks:
+
 Preventing DNS leaks
 ======================
 

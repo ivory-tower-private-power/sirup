@@ -20,7 +20,8 @@ A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP add
 
 ## What is required
 - An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark)
-- A linux OS (I have not tried out other systems) and superuser rights
+- A linux OS with superuser rights
+- `openvpn` for linux. [Installation](https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos).
 
 The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
@@ -29,9 +30,7 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 To install sirup from GitHub repository, do:
 
 ```console
-git clone git@github.com:ivory-tower-private-power/sirup.git
-cd sirup
-python -m pip install .
+python -m pip install 'sirup @ git+https://github.com/ivory-tower-private-power/sirup'
 ```
 
 ## How to use sirup
@@ -62,7 +61,7 @@ The `sirup.VPNConnector.VPNConnector` class has two methods: `connect` and `disc
 ```python
 from sirup.VPNConnector import VPNConnector
 
-config_file = os.path.join(proxy_path, "name-of-one-config-file.ovpn")
+config_file = os.path.join(config_path, "name-of-one-config-file.ovpn")
 pwd = getpass.getpass()
 
 connector = VPNConnector(auth_file=mypass, config_file=config_file)
@@ -90,6 +89,10 @@ print(rotator.connector.current_ip)
 
 rotator.disconnect()
 ```
+
+## Documentation
+
+The documentation of sirup can be found on [Read the Docs](https://sirup-vpn.readthedocs.io/en/latest/).
 
 
 ## Contributing
