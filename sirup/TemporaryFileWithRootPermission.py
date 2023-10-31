@@ -7,7 +7,7 @@ import tempfile
 
 class TemporaryFileWithRootPermission:
     """Temporary file that requires root permission.
-    The purpose of this class is to handle files that the `openvpn` CLI writes to.
+    The purpose of this class is to handle files that the `OpenVPN` command-line interface (CLI) writes to.
     Because the CLI works with root permission, the files it writes to also require root permission,
     and can for instance only be removed with root permission.
     

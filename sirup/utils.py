@@ -13,7 +13,7 @@ from .TemporaryFileWithRootPermission import TemporaryFileWithRootPermission
 def get_ip(echo=False, config_file=None):
     """Query the current IP address of the computer.
 
-    The function calls `ifconfig.me` and retrieves the IP address.
+    The function calls `https://ifconfig.me` and retrieves the IP address.
 
     Args:
         echo (bool, optional): If `True`, logging prints the retrieved IP address
@@ -69,7 +69,7 @@ def lookup_strings_in_list(strings_to_check, list_of_strings):
 def check_connection(log_file, timeout, pwd, waiting_time=2):
     """Wait and test for established connection until `timeout`.
 
-    The function repeatedly scans the log file of the openvpn process and looks a string
+    The function repeatedly scans the log file of the openvpn process and looks for a string
     that indicates that the vpn connection was established. It exits when the string is found
     or `timeout` is reached.
 
@@ -97,8 +97,8 @@ def sudo_read_file(file, pwd=None):
     Args:
         file (str or TemporaryFileWithRootPermission): the file to read
         pwd (str, optional): root password for the file. If file is 
-        a `TemporaryFileWithRootPermission` and no password is provided, it 
-        is taken from the file object.
+            a `TemporaryFileWithRootPermission` and no password is provided, the password 
+            is taken from the `TemporaryFileWithRootPermission` object.
 
     Returns:
         list: Content of the file, each line is one element in the list. 
@@ -133,8 +133,8 @@ def list_files_with_full_path(directory, rule=None):
 
     Args:
         directory (str): directory path
-        rule (lambda, optional): a lambda function that returns a `bool`. If supplied, the function
-          filters the files in the directory by `True`.
+        rule (lambda, optional): a lambda function that returns a `bool`. If supplied, `list_files_with_full_path`
+          filters the files in the directory by whether `rule` returns `True`.
 
     Returns:
         list: files, possibly filtered, with the full path. 
