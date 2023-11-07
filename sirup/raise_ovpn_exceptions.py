@@ -17,19 +17,11 @@ def raise_ovpn_exceptions(stdout, stderr, log):
         msg1 = "No such file or directory"
         if lookup_strings_in_list([msg0, msg1], log):
             raise FileNotFoundError("Wrong authentication file.")
-        # print other information here for unanticipated situations
-        base_error_message = f"""
-        Log content:\n {" ".join(log)},
-        stdout content:\n {stdout}
-        """
-    elif stdout != "":
-        if "Error opening configuration file:" in stdout:
-            raise RuntimeError("Problem with configuration file:")
-        base_error_message = f"stdout content: {stdout}"
-    else: # unanticipated stderr cases
-        base_error_message = f"""
-            stderr content:\n {stderr}
-            """
-    
-    if base_error_message is not None:
-        raise RuntimeError(base_error_message)
+        # print other information here for unanticipated situations        
+        raise RuntimeError(f"Log content:\n {" ".join(log)}, stdout content:\n {stdout}")
+    elif "Error opening configuration file:" in stdout:
+        raise RuntimeError("Problem with configuration file:")    
+    elif stdout == "": # unanticipated stderr cases
+        raise RuntimeError(f"stderr content:\n {stderr}")
+    else:        
+        raise RuntimeError(f"stdout content: {stdout}")
