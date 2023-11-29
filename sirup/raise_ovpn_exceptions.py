@@ -18,7 +18,7 @@ def raise_ovpn_exceptions(stdout, stderr, log):
         if lookup_strings_in_list([msg0, msg1], log):
             raise FileNotFoundError("Wrong authentication file.")
         # print other information here for unanticipated situations        
-        raise RuntimeError(f"Log content:\n {" ".join(log)}, stdout content:\n {stdout}")
+        raise RuntimeError(f"Log content:\n {' '.join(log)}, stdout content:\n {stdout}")
     elif "Error opening configuration file:" in stdout:
         raise RuntimeError("Problem with configuration file:")    
     elif stdout == "": # unanticipated stderr cases
