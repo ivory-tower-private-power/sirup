@@ -1,18 +1,21 @@
 # sirup: simple IP rotation using python
 
-[![github license badge](https://img.shields.io/github/license/ivory-tower-private-power/sirup)](https://github.com/ivory-tower-private-power/sirup)
+[![build](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml)
+[![Documentation Status](https://readthedocs.org/projects/sirup-vpn/badge/?version=latest)](https://sirup-vpn.readthedocs.io/en/latest/?badge=latest)
+[![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=coverage)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
+[![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
 [![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://research-software-directory.org/software/sirup) 
-[![workflow pypi badge](https://img.shields.io/pypi/v/sirup.svg?colorB=blue)](https://pypi.python.org/project/sirup/)
+
+<!-- [![workflow pypi badge](https://img.shields.io/pypi/v/sirup.svg?colorB=blue)](https://pypi.python.org/project/sirup/) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)  -->
 <!-- [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>)  -->
-[![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
-[![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=alert_status)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
-[![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=coverage)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
-[![Documentation Status](https://readthedocs.org/projects/sirup-vpn/badge/?version=latest)](https://sirup-vpn.readthedocs.io/en/latest/?badge=latest)
-[![build](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml)
-[![cffconvert](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml)
-[![sonarcloud](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml) 
-[![markdown-link-check](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml)
+
+<!-- [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=alert_status)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup) -->
+
+<!-- [![cffconvert](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml) -->
+<!-- [![sonarcloud](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml)  -->
+<!-- [![markdown-link-check](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml) -->
+
 
 A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP address in python programs. 
 
