@@ -54,7 +54,8 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.dev.md", 
+                    "CODE_OF_CONDUCT.md", "project_setup.md", "CONTRIBUTING.md"]
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
