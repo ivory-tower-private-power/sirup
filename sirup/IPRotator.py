@@ -89,7 +89,7 @@ class IPRotator():
             shuffle (bool, optional): If True, shuffle the config files before connecting.
             max_trials (int, optional): Maximum number of connection attempts before raising an exception.
         """
-        i = 0 
+        n_trials = 0 
         if shuffle:
             self.config_queue.shuffle(self.randomizer)
         # try to connect; if it fails, change the server and retry
@@ -98,13 +98,13 @@ class IPRotator():
             try:
                 connector.connect(pwd=self.pwd)
             except TimeoutError as e:
-                i += 1
-                if i >= max_trials:
+                n_trials += 1
+                if n_trials >= max_trials:
                     raise TimeoutError(f"Failed to connect to {max_trials} different servers.") from e 
                 waiting_time = 10
-                if i % 20 == 0:
+                if n_trials % 20 == 0:
                     waiting_time = 300 # try to see whether this helps
-                    logging.info("Failed to connect %d times; waiting %d", i, waiting_time)
+                    logging.info("Failed to connect %d times; waiting %d", n_trials, waiting_time)
                 time.sleep(waiting_time)
             except requests.ConnectionError:
                 kill_all_connections(self.pwd)
