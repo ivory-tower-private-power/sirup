@@ -22,11 +22,10 @@ A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP add
 
 
 ## What is required
-- An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark)
-- A linux OS with superuser rights
-- `openvpn` for linux. [Installation](https://mullvad.net/en/help/linux-openvpn-installation/).
+- An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark).
+- A linux OS with superuser rights.
+- `openvpn` for linux. See [here](https://mullvad.net/en/help/linux-openvpn-installation/) for installation instructions.
 
-The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
 ## How to install
 
@@ -39,9 +38,6 @@ python -m pip install 'sirup @ git+https://github.com/ivory-tower-private-power/
 ## How to use sirup
 
 The package has two functionalities: connecting to a VPN server, and rotating the IP address. 
-
-Before using the package, have a look at ["Preventing DNS leaks"](https://github.com/ivory-tower-private-power/sirup/blob/main/docs/dns_leaks.rst) to make sure the VPN service works properly.
-
 
 **1. Start up**
 
@@ -92,6 +88,11 @@ print(rotator.connector.current_ip)
 
 rotator.disconnect()
 ```
+
+### Note
+
+Before using the package, have a look at ["Making sure the VPN connection works correctly"](https://github.com/ivory-tower-private-power/sirup/blob/main/docs/correct_connection.rst) to make sure the VPN service works properly.
+
 
 ## Documentation
 
