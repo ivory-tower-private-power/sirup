@@ -14,7 +14,7 @@ Sirup is an open-source Python package that makes it easy to connect to, and rot
 
   installation
   getting_started
-  dns_leaks
+  correct_connection
 
 Indices and tables
 ==================

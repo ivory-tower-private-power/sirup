@@ -94,6 +94,6 @@ The :class:`sirup.IPRotator.IPRotator` class can be used to iteratively change t
 Important 
 ---------
 
-To make sure that the VPN tunnels work correctly and do not revelal the original IP address of the device, have a look at :ref:`dns_leaks`.
+To make sure that the VPN tunnels work correctly and do not reveal the original IP address of the device, have a look at :ref:`correct_connection`.
 
 

@@ -1,17 +1,21 @@
-.. _dns_leaks:
+.. _correct_connection:
 
-Preventing DNS leaks
-======================
+Making sure the VPN connection works correctly
+===============================================
 
-Sometimes, connecting to the VPN server still allows third parties to identify the original IP address -- the IP address the machine had in absence of the VPN service. This section explains how to ensure that the IP address is correctly changed when connecting to the VPN server.
+It's good to check that the VPN connections work as intended. It may be necessary to adjust some settings of the computer to get it to work. 
 
 .. note::
     This information refers to Linux systems. If you use another operating system and have problems with changing the IP address, make an issue in the `github repository <https://github.com/ivory-tower-private-power/sirup>`_ . 
 
 
 
-Step 1: Checking for DNS leaks [1]_
-------------------------------------
+Step 1: Checking for DNS leaks [1]_, and checking for correct connection
+-------------------------------------------------------------------------
+
+First, if you notice that after connecting to the VPN server through `sirup` you can't access the internet anymore, follow the instructions on :ref:`rst resolv`.
+
+Second, connecting to the VPN server sometimes still allows third parties to identify the original IP address -- the IP address the machine had in absence of the VPN service. This section explains how to ensure that the IP address is correctly changed when connecting to the VPN server.
 
 After installing the package, and before using it, it is recommended to check for `DNS leaks <https://en.wikipedia.org/wiki/DNS_leak>`_. DNS leaks happen when DNS requests are sent to the server of the Internet service provider (ISP) instead directly through the VPN. This can reveal the IP address, or at least the location.
 
@@ -27,6 +31,7 @@ Some VPN providers have their own instructions on how to prevent from DNS leaks.
 .. note:: 
     The instructions below may impact your system's stability and security. Take them at your own responsibility.
 
+.. _RST resolv:
 
 Customize ``resolv.conf``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
