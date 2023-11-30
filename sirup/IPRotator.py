@@ -11,7 +11,11 @@ from .VPNConnector import VPNConnector
 
 
 class IPRotator():
-    """Class to manage a set of VPN configuration files and rotate the IP by iterating across the configuration files. 
+    """Class to manage a set of VPN configuration files and rotate the IP by iterating across the configuration files.
+    
+    Note:
+        When the class is instantiated, any existing openvpn processes are killed. This is for reasons of safety, simplicity
+        and making sure that the VPN connector works as intended. 
 
     Args:
         auth_file (str): Path to the file containing authentication credentials for VPN connections.
@@ -38,7 +42,6 @@ class IPRotator():
 
         connector (None or sirup.VPNConnector.VPNConnector): If a VPN tunnel is active, the `sirup.VPNConnector` object that is responsible 
             for the connection.
-
     """
 
     def __init__(self, # pylint: disable=too-many-arguments
