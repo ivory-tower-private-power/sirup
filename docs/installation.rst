@@ -16,7 +16,14 @@ Lastly, `sirup` requires an account with a VPN service provider such as ProtonVP
 Installation
 --------------
 
-The installation currently works only with pip from github:
+You can install sirup from pip with 
+
+.. code-block:: console 
+
+    python -m pip install sirup
+
+
+Alternatively, you can install directly from github with
 
 .. code-block:: console
 

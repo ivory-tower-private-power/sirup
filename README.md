@@ -29,6 +29,12 @@ A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP add
 
 ## How to install
 
+To install from pip, do:
+
+```console
+python -m pip install sirup
+```
+
 To install sirup from GitHub repository, do:
 
 ```console
