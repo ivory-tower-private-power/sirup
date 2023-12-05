@@ -8,7 +8,7 @@ authors:
     given-names: Flavio
     orcid: "https://orcid.org/0009-0000-5893-9000"
 date-released: 2023-12-05
-doi: 10.0000/FIXME
+doi: 10.5281/zenodo.10261948
 version: "0.2.2"
 repository-code: "git@github.com:ivory-tower-private-power/sirup"
 keywords:
