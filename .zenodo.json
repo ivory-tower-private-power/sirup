@@ -1,0 +1,18 @@
+{
+    "creators": [
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Hafner, Flavio",
+            "orcid": "0000-0002-8329-7000"
+        }
+    ],
+    "keywords": [
+        "ip-rotation",
+        "openvpn",
+        "Python"
+    ],
+    "license": {
+        "id": "Apache-2.0"
+    },
+    "title": "sirup: simple IP rotation using python"
+}
