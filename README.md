@@ -4,10 +4,11 @@
 [![Documentation Status](https://readthedocs.org/projects/sirup-vpn/badge/?version=latest)](https://sirup-vpn.readthedocs.io/en/latest/?badge=latest)
 [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=coverage)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
 [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
-[![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://research-software-directory.org/software/sirup) 
-
+[![DOI](https://zenodo.org/badge/667731991.svg)](https://zenodo.org/doi/10.5281/zenodo.10261948)
+<!-- 
+[![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://research-software-directory.org/software/sirup)  -->
 <!-- [![workflow pypi badge](https://img.shields.io/pypi/v/sirup.svg?colorB=blue)](https://pypi.python.org/project/sirup/) -->
-<!-- [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)  -->
+
 <!-- [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>)  -->
 
 <!-- [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=alert_status)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup) -->
