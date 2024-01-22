@@ -65,7 +65,7 @@ The :class:`sirup.VPNConnector.VPNConnector` class can be used as follows to con
 
 
 
-Rotating the IP address by rotating acrossss servers 
+Rotating the IP address by rotating across servers 
 -----------------------------------------------------
 
 The :class:`sirup.IPRotator.IPRotator` class can be used to iteratively change the IP address. For this, it is necessary to have multiple ``config_file`` s downloaded.
