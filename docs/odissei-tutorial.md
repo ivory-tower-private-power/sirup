@@ -6,8 +6,7 @@ When scraping data from the internet, you can protect your privacy by performing
 If you are using python on a linux operating system, you can use the `sirup` package to flexibly change your IP address. This tutorial explains how to set it up.
 
 **Note**
-When using IP rotation for webscraping, it is important to respect the law and not send too many requests to the target website. This means, for instance, moderating the number of requests made to a website in a given time. 
-
+When using IP rotation for webscraping, it is important to respect the law, and for instance only access information that is publicly available. Also, do not send too many requests to the target website in a given time. 
 
 ## What you need 
 
@@ -33,11 +32,11 @@ You can install `sirup` as follows:
 python -m pip install sirup
 ```
 
-To use the package and change your IP address, you need an account with a VPN service provider that offers OpenVPN configuration files for your account. At the time of writing, for instance ProtonVPN and Surfshark offer this option. We will use ProtonVPN in this tutorial.
+To use the package and change your IP address, you need an account with a VPN service provider that offers OpenVPN configuration files for your account. At the time of writing, for instance ProtonVPN and Surfshark offer this option. (Note that these services are not for free.) We will use ProtonVPN in this tutorial.
 
 After creating an account, you need to download two sets of files. 
 
-First, you download credentials that identify our Proton account when using OpenVPN. On the ProtonVPN website, click on "Account" and then you see something like this:
+First, you download credentials that identify your Proton account when using OpenVPN. On the ProtonVPN website, click on "Account" and then you see something like this:
 
 ![file](./screenshot-proton-username-clean.png)
 
