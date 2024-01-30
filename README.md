@@ -25,7 +25,7 @@ A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP add
 ## What is required
 - An account with a VPN service that supports openvpn (for instance ProtonVPN or surfshark).
 - A linux OS with superuser rights.
-- `openvpn` for linux. See [here](https://mullvad.net/en/help/linux-openvpn-installation/) for installation instructions.
+- `openvpn` for linux. See [here](https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareReposgit) for installation instructions.
 
 
 ## How to install
