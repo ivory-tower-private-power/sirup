@@ -21,6 +21,9 @@
         },
         {
           "pattern": "^https://readthedocs.org/dashboard/import.*"
+        },
+        {
+          "pattern": "^https://community.openvpn.net/*"
         }
     ],
     "replacementPatterns": [
