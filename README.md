@@ -109,7 +109,7 @@ The documentation of sirup can be found on [Read the Docs](https://sirup-vpn.rea
 ## Contributing
 
 If you want to contribute to the development of sirup,
-have a look at the [contribution guidelines](CONTRIBUTING.md).
+have a look at the [contribution guidelines](docs/CONTRIBUTING.md).
 
 ## Credits
 
