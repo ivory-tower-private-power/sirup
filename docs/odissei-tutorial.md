@@ -131,11 +131,11 @@ print(rotator.connector.current_ip)
 
 ```
 
-That's it, you're now ready to manage your IP address with python! You can find the complete documentation of the package under [https://sirup-vpn.readthedocs.io/](https://sirup-vpn.readthedocs.io/en/latest/getting_started.html).
 
+### Conclusion
 
-If you use the package in academic work, please cite it as:
+This tutorial has walked you through the steps to manage your IP address through python, using the `sirup` package. We hope it makes your scraping workflows easier!
 
-```txt
-Hafner, F. (2023). sirup (v0.2.2). Zenodo. https://doi.org/10.5281/zenodo.10261949
-```
+`sirup` is an open-source package developed by Flavio Hafner. If you use the tool, you can cite [this zenodo repository](https://zenodo.org/records/10261949) with the DOI: https://doi.org/10.5281/zenodo.10261949. 
+
+The source code of the package is [here](https://github.com/ivory-tower-private-power/sirup?tab=readme-ov-file), where you can contribute to it, build on it and submit issues.
