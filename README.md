@@ -1,21 +1,14 @@
-# sirup: simple IP rotation using python
 
 [![build](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/build.yml)
 [![Documentation Status](https://readthedocs.org/projects/sirup-vpn/badge/?version=latest)](https://sirup-vpn.readthedocs.io/en/latest/?badge=latest)
 [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=coverage)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup)
 [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
 [![DOI](https://zenodo.org/badge/667731991.svg)](https://zenodo.org/doi/10.5281/zenodo.10261948)
-<!-- 
-[![RSD](https://img.shields.io/badge/rsd-sirup-00a3e3.svg)](https://research-software-directory.org/software/sirup)  -->
-<!-- [![workflow pypi badge](https://img.shields.io/pypi/v/sirup.svg?colorB=blue)](https://pypi.python.org/project/sirup/) -->
 
-<!-- [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>)  -->
+<img src="docs/_icons/icon.jpeg" alt="icon" width="300" height="auto">
 
-<!-- [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=ivory-tower-private-power_sirup&metric=alert_status)](https://sonarcloud.io/dashboard?id=ivory-tower-private-power_sirup) -->
 
-<!-- [![cffconvert](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/cffconvert.yml) -->
-<!-- [![sonarcloud](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/sonarcloud.yml)  -->
-<!-- [![markdown-link-check](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/ivory-tower-private-power/sirup/actions/workflows/markdown-link-check.yml) -->
+# sirup: simple IP rotation using python
 
 
 A wrapper around the openvpn CLI to connect to VPN servers and rotate the IP address in python programs. 
@@ -114,3 +107,5 @@ have a look at the [contribution guidelines](docs/CONTRIBUTING.md).
 ## Credits
 
 This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [NLeSC/python-template](https://github.com/NLeSC/python-template).
+
+The logo was generated using Chat-GPT and Micorosoft Co-Pilot on July 18th 2024 at 9:32am using  [this prompt](docs/_icons/prompt.md).
